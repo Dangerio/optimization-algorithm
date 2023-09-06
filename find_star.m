@@ -1,4 +1,4 @@
-function [population_star] = find_star(population_s, c_r)
+function [population_star] = find_star(population_s, c_r, grid)
     grid_denomerator = 1:grid.'/grid;
 
     population_r_streched = repmat(population_s, grid, 1);
