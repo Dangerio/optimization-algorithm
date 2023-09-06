@@ -1,4 +1,4 @@
-function [population] = minimize(func, opt_set, alpha, eps, thr, grid, num_iter)
+function [population] = minimize(func, opt_set, alpha, eps, thr, grid)
 dim = size(opt_set, 1);
 pop_size = dim * 2;
 
@@ -7,8 +7,8 @@ population = calc_new_pop(population, alpha, eps);
 while closeness(population) < thr
     new_population = generate();
     new_population = calc_new_pop(new_population, alpha, eps);
-    population = population(1:pop_size / 2, :);
-    new_population = new_population(1:pop_size / 2, :);
+    population = population(1:opt_size / 2, :);
+    new_population = new_population(1:opt_size / 2, :);
     population = my_sort(cat(1, population, new_population));
 end
 
@@ -26,11 +26,10 @@ end
         val = mean(pdist2(population, center));    
     end
     
-    function [new_population] = my_sort() 
+    function [new_population] = my_sort(population) 
         values = func(population);
         new_population = [values population];
         new_population = sortrows(new_population, 1, "ascend");
-        new_population = new_population(:, 2:end);
     end
-    
+
 end
