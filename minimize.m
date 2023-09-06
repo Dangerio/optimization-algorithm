@@ -4,12 +4,14 @@ pop_size = dim * 2;
 
 population = generate();
 population = calc_new_pop(population, alpha, eps);
-while closeness(population) < thr
+iter = 1;
+while closeness(population) < thr || iter <= num_iter
     new_population = generate();
     new_population = calc_new_pop(new_population, alpha, eps);
     population = population(1:pop_size / 2, :);
     new_population = new_population(1:pop_size / 2, :);
     population = my_sort(cat(1, population, new_population));
+    iter = iter + 1;
 end
 
     function [population] = generate()
@@ -32,5 +34,4 @@ end
         new_population = sortrows(new_population, 1, "ascend");
         new_population = new_population(:, 2:end);
     end
-    
 end
