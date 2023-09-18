@@ -1,10 +1,10 @@
-function [population] = minimize(func, opt_set, eps, thr, grid, num_iter, alpha)
+function [final_value, population] = minimize(func, opt_set, eps, thr, grid, num_iter, alpha, max_r)
 dim = size(opt_set, 1);
 pop_size = dim * 2;
 
 iter = 1;
 population = generate();
-population = calc_new_pop(population);
+%population = calc_new_pop(population);
 while dist(population) >= thr && iter <= num_iter
     new_population = generate();
     new_population = calc_new_pop(new_population);
@@ -12,7 +12,11 @@ while dist(population) >= thr && iter <= num_iter
     new_population = new_population(1:pop_size / 2, :);
     population = my_sort(cat(1, population, new_population));
     iter = iter + 1;
+    if mod(iter, 500) == 0
+        disp(func(population(1,:)))
+    end
 end
+final_value = func(population(1,:));
 
     function [population] = generate()
         population = zeros(pop_size, dim);
@@ -44,10 +48,11 @@ end
     end
 
     function [population] = calc_new_pop(population)
-        while func(population(end, :)) -  func(population(1, :)) >= eps
+        big_r = true;
+        while func(population(end, :)) -  func(population(1, :)) >= eps &&  big_r == true
             r = 1;
             population_s = population(end,:);
-            while true
+            while r < max_r
                 c_r = calc_c(population, r);
                 population_star = find_star(population_s, c_r);
                 if population_star ~= 'N'
@@ -59,6 +64,9 @@ end
                     r = r + 1;
                 end
                 
+            end
+            if r == max_r
+                big_r = false;
             end
         end
     end
