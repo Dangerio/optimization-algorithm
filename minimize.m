@@ -1,4 +1,4 @@
-function [final_value, population] = minimize(func, opt_set, eps, thr, grid, num_iter, alpha, max_r)
+function [final_value, population] = minimize(func, opt_set, eps, thr, grid, num_iter, alpha, max_r, sigma, beta, tolerance)
 dim = size(opt_set, 1);
 pop_size = dim * 2;
 
@@ -7,14 +7,35 @@ population = generate();
 while dist(population) >= thr && iter <= num_iter
     new_population = generate();
     new_population = calc_new_pop(new_population);
-    population = population(1:pop_size / 2, :);
-    new_population = new_population(1:pop_size / 2, :);
+    % population = population(1:pop_size / 2, :);
+    % new_population = new_population(1:pop_size / 2, :);
     population = my_sort(cat(1, population, new_population));
+    population = population(1:pop_size, :);
+    population(end - 1:end, :) = population(end - 1:end, :) + normrnd(0, 0.0001, size(population(end - 1:end, :),1), size(population(end - 1:end, :),2));
+    population(end - 3:end - 2, :) = population(end - 3:end - 2, :) + normrnd(0, 0.00001, size(population(end - 3:end - 2, :),1), size(population(end - 3:end - 2, :),2));
+    population(end - 4, :) = population(end - 4, :) + normrnd(0, 0.0000001, size(population(end - 4, :),1), size(population(end - 4, :),2));
+
+    % if mod(iter, 10) == 0
+    %     population(end, :) = population(end, :) + normrnd(0, 0.1, size(population(end, :),1), size(population(end, :),2));
+    % end
+
+
+    population = my_sort(population);
+    population = calc_new_pop(population);
+
     iter = iter + 1;
-    if mod(iter, 10) == 0
-        disp(func(population(1,:)))
+    if mod(iter, 50) == 0
+        format short e
+        disp('Точки')
+        disp(population)
+        disp('Значение функции')
+        disp(func(population))
+        disp('Расстояние между точками')
+        disp(dist(population))
+
     end
 end
+
 final_value = func(population(1,:));
 
     function [population] = generate()
@@ -40,21 +61,28 @@ final_value = func(population(1,:));
 
     function [c_r] = calc_c(population, r)
         s = size(population, 1);
-        gamma = 1 / r;
+        gamma = r^(-beta);
         alpha_1 = 1 - gamma * (s - 2) / (s - 1);
         alpha_oth = gamma / (s - 1);
         c_r = alpha_1 * population(1, :) + alpha_oth * sum(population(2:end - 1, :));
+        c_r = add_noise_one_time(c_r);
     end
 
     function [population] = calc_new_pop(population)
         big_r = true;
         previous_value = Inf;
-        while abs(previous_value - func(population(end, :))) > 1e-16 && func(population(end, :)) -  func(population(1, :)) >= eps &&  big_r == true
+        while abs(previous_value - func(population(end, :))) > tolerance && func(population(end, :)) -  func(population(1, :)) >= eps &&  big_r == true
             r = 1;
             population_s = population(end,:);
             previous_value = func(population_s);
             while r < max_r
                 c_r = calc_c(population, r);
+                c_r = get_edge_point(c_r);
+                % disp(c_r)
+                % disp(r)
+                % disp(population)
+                % population_s = add_noise_one_time(population_s);
+                % population_s = get_edge_point(population_s);
                 population_star = find_star(population_s, c_r);
                 if ~isstring(population_star)
                     population(end, :) = [];
@@ -72,6 +100,41 @@ final_value = func(population(1,:));
         end
     end
 
+    function [x_noised] = add_noise(x)
+        rand = normrnd(0, sigma, size(x,1), size(x,2));
+        x_noised = x + rand;
+        while ~is_in_set(x_noised)
+            rand = normrnd(0, sigma, size(x,1), size(x,2));
+            x_noised = x + rand;
+        end
+    end
+
+    function [res] = is_in_set(x)
+        res = true;
+        for i = 1:dim
+            if x(i) < opt_set(i, 1) || x(i) > opt_set(i, 2)
+                res = false;
+            end
+        end
+    end
+
+    function [x_noised] = add_noise_one_time(x)
+        rand = normrnd(0, sigma, size(x,1), size(x,2));
+        x_noised = x + rand;
+    end
+    
+    function [y] = get_edge_point(x)
+        for i = 1:dim
+            if x(i) + 1e-6 < opt_set(i, 1) 
+                x(i) = opt_set(i, 1); 
+            elseif x(i) - 1e-6 > opt_set(i, 2)
+                x(i) = opt_set(i, 2);
+            end
+        end
+        y = x;
+    end
+     
+            
     
     function [shift] = find_intersection(from, direction, limits, index, limit_index)
         shift = (limits(index, limit_index) - from(index)) / direction(index);
