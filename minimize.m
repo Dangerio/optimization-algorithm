@@ -94,12 +94,20 @@ final_value = func(population(1,:));
         for i = 1:dim
             shift_until_lower_bound = find_intersection(population_s, direction, opt_set, i, 1);
             if ~isstring(shift_until_lower_bound)
-                max_shift = shift_until_lower_bound;
+                if isstring(max_shift)
+                    max_shift = shift_until_lower_bound;
+                else 
+                    max_shift = min(max_shift, shift_until_lower_bound);
+                end
             end
 
             shift_until_upper_bound = find_intersection(population_s, direction, opt_set, i, 2);
             if ~isstring(shift_until_upper_bound)
-                max_shift = shift_until_upper_bound;
+                if isstring(max_shift)
+                    max_shift = shift_until_upper_bound;
+                else 
+                    max_shift = min(max_shift, shift_until_upper_bound);
+                end
             end
   
         end
