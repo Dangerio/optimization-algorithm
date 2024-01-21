@@ -1,6 +1,6 @@
 function [final_value, best_argument] = shvedov_minimize(func, opt_set, eps, thr, grid, num_iter, alpha, max_r, sigma, beta, tolerance)
 dim = size(opt_set, 1);
-pop_size = dim * 2;
+pop_size = 3 + dim * 2;
 
 iter = 1;
 population = generate();
