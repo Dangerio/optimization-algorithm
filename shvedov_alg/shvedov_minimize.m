@@ -1,4 +1,4 @@
-function [final_value, population] = minimize(func, opt_set, eps, thr, grid, num_iter, alpha, max_r, sigma, beta, tolerance)
+function [final_value, best_argument] = shvedov_minimize(func, opt_set, eps, thr, grid, num_iter, alpha, max_r, sigma, beta, tolerance)
 dim = size(opt_set, 1);
 pop_size = dim * 2;
 
@@ -24,19 +24,20 @@ while dist(population) >= thr && iter <= num_iter
     population = calc_new_pop(population);
 
     iter = iter + 1;
-    if mod(iter, 50) == 0
-        format short e
-        disp('Точки')
-        disp(population)
-        disp('Значение функции')
-        disp(func(population))
-        disp('Расстояние между точками')
-        disp(dist(population))
-
-    end
+    % if mod(iter, 50) == 0
+    %     format short e
+    %     disp('Точки')
+    %     disp(population)
+    %     disp('Значение функции')
+    %     disp(func(population))
+    %     disp('Расстояние между точками')
+    %     disp(dist(population))
+    % 
+    % end
 end
 
-final_value = func(population(1,:));
+best_argument = population(1,:);
+final_value = func(best_argument);
 
     function [population] = generate()
         population = zeros(pop_size, dim);
