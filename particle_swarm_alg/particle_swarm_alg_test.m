@@ -32,3 +32,17 @@ opt_set = repmat([-1000, 1000], 2, 1);
 tic
     [y, x] = particle_swarm(@rosenbrock_func, opt_set, alpha, beta, gamma, M, L, tolerance)
 toc
+
+
+disp("Test on Rastrigin function")
+opt_set = repmat([-5.12, 5.12], 3, 1);
+tic
+    [y, x] = particle_swarm(@rastrigin_func, opt_set, alpha, beta, gamma, M, L, tolerance)
+toc
+
+disp("Test on Ackley function")
+opt_set = repmat([-5, 5], 2, 1);
+tic
+    [y, x] = particle_swarm(@ackley_func, opt_set, alpha, beta, gamma, M, L, tolerance)
+toc
+
