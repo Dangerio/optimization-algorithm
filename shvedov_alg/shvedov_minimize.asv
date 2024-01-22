@@ -30,6 +30,9 @@ while iter <= num_iter && func_diff > tolerance
     %     disp(population)
     %     disp('Значение функции')
     %     disp(func(population))
+    %     disp('Расстояние между точками')
+    %     disp(dist(population))
+    % 
     % end
 end
 
@@ -60,24 +63,26 @@ final_value = func(best_argument);
         c_r = alpha_1 * population(1, :) + alpha_oth * sum(population(2:end - 1, :));
     end
 
-
     function [] = update_population()
         population = my_sort(population);
         big_r = true;
         previous_value = Inf;
-        while abs(previous_value - func(population(end, :))) > eps &&  big_r
+        while abs(previous_value - func(population(end, :))) > 1e-16 && func(population(end, :)) -  func(population(1, :)) >= eps &&  big_r
             r = 1;
             population_s = population(end,:);
             previous_value = func(population_s);
             while r < max_r
                 c_r = calc_c(population, r);
+                c_r = get_edge_point(c_r);
 
                 population_star = find_star(population_s, c_r);
                 if ~isstring(population_star)
                     % if mod(iter, 50) == 0
                     %     disp(r)
+                    %     disp(population_star)
                     % end
-                    population(end, :) = population_star;
+                    population(end, :) = [];
+                    population = [population; population_star];
                     population = my_sort(population);
                     break
                 else
@@ -86,9 +91,22 @@ final_value = func(best_argument);
                 
             end
             if r == max_r
+                disp("big r")
                 big_r = false;
             end
         end
+    end
+
+    
+    function [y] = get_edge_point(x)
+        for i = 1:dim
+            if x(i) + 1e-6 < opt_set(i, 1) 
+                x(i) = opt_set(i, 1); 
+            elseif x(i) - 1e-6 > opt_set(i, 2)
+                x(i) = opt_set(i, 2);
+            end
+        end
+        y = x;
     end
      
             
@@ -139,7 +157,7 @@ final_value = func(best_argument);
         
         max_shift = calc_max_shift(population_s, c_r);
         helper_func = @(shift) func(population_s + shift .* (c_r - population_s));
-        [best_value, best_shift] = golden_ratio_search(helper_func, 0, max_shift, 50, 0);
+        [best_value, best_shift] = golden_ratio_search(helper_func, 0, max_shift, 100, 0);
 
         func_value_x1 = func(population(1,:));
         func_value_xs = func(population_s);
