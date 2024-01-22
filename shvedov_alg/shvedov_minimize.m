@@ -33,6 +33,12 @@ while iter <= num_iter && func_diff > tolerance
     % end
 end
 
+
+if iter > num_iter
+    disp("WARNING")
+    disp("Max limit on iterations has reached, probably the algorithm fails to converge.")
+end
+
 best_argument = population(1,:);
 final_value = func(best_argument);
 

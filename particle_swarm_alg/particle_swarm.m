@@ -43,3 +43,8 @@ while iter <= L && func_value_diff > tolerance
     end
     iter = iter + 1;
 end
+
+if iter > L
+    disp("WARNING")
+    disp("Max limit on iterations has reached, probably the algorithm fails to converge.")
+end
