@@ -5,7 +5,7 @@ function [y, x] = golden_ratio_search(func, lb, ub, max_iter, tolerance)
     func_diff = Inf;
     y = Inf;
     while iter <= max_iter && func_diff > tolerance
-        if mod(iter, 100) == 1
+        if mod(iter, 10) == 1
             y_old = y;
         end
   
@@ -26,7 +26,7 @@ function [y, x] = golden_ratio_search(func, lb, ub, max_iter, tolerance)
             ub = x_right;
         end
 
-        if mod(iter, 100) == 99
+        if mod(iter, 10) == 9
             func_diff = abs(y - y_old);
         end
         iter = iter + 1;
