@@ -34,7 +34,7 @@ classdef ParticleSwarmSolver < Solver
 
             X = generate(obj.population_size, opt_set);
             V = generate(obj.population_size, direction_set);            
-            X = clip_population(X + V, opt_set);
+            X = correct_population(X + V, opt_set);
             y = func(X);
             value_local = y;
             argmin_local = X;
@@ -53,7 +53,7 @@ classdef ParticleSwarmSolver < Solver
                 xi_1 = repmat(unifrnd(0, 1, obj.population_size, 1), 1, dim);
                 xi_2 = repmat(unifrnd(0, 1, obj.population_size, 1), 1, dim);
                 V = obj.alpha * V + obj.beta * xi_1 .* (argmin_local - X) +  obj.gamma * xi_2 .* (argmin_global - X);
-                X = clip_population(X + V, opt_set);
+                X = correct_population(X + V, opt_set);
                 y = func(X);
             
                 [value_local, idxmin_local] = min([value_local, y], [], 2);

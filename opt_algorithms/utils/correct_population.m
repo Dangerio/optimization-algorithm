@@ -1,4 +1,4 @@
-function [population] = clip_population(population, opt_set)
+function [population] = correct_population(population, opt_set)
     lower_bounds = repmat(opt_set(:, 1)', size(population, 1), 1);
     upper_bounds = repmat(opt_set(:, 2)', size(population, 1), 1);
     mask_less_lb = population < lower_bounds;
