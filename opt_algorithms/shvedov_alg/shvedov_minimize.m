@@ -145,7 +145,7 @@ final_value = func(best_argument);
         
         max_shift = calc_max_shift(population_s, c_r);
         helper_func = @(shift) func(population_s + shift .* (c_r - population_s));
-        [best_value, best_shift] = golden_ratio_search(helper_func, 0, max_shift, 50, 0);
+        [best_value, best_shift] = GoldenRatioSolver(50, 0).minimize(helper_func, [0, max_shift]);
 
         func_value_x1 = func(population(1,:));
         func_value_xs = func(population_s);
