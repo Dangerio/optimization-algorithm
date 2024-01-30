@@ -8,6 +8,7 @@ classdef ParticleSwarmSolver < Solver
         population_size = 100;
         num_iter = 10^6;
         tolerance = 0;
+        verbose = false;
     end
     
     methods
@@ -45,6 +46,11 @@ classdef ParticleSwarmSolver < Solver
             iter = 1;
             func_value_diff = Inf;
             while iter <= obj.num_iter && func_value_diff > obj.tolerance
+                if obj.verbose
+                    disp("Iter")
+                    disp(iter)
+                end
+
                 if mod(iter, 1000) == 1
                     old_value = value_global;
                 end
