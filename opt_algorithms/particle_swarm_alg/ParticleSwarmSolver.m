@@ -32,8 +32,8 @@ classdef ParticleSwarmSolver < Solver
             direction_set = [(opt_set(:, 1) - opt_set(:, 2))'; (opt_set(:, 2) - opt_set(:, 1))']';
 
 
-            X = generate(obj.population_size, opt_set);
-            V = generate(obj.population_size, direction_set);            
+            X = generate_population(obj.population_size, opt_set);
+            V = generate_population(obj.population_size, direction_set);            
             X = correct_population(X + V, opt_set);
             y = func(X);
             value_local = y;

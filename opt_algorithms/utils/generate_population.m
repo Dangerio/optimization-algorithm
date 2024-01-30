@@ -1,4 +1,4 @@
-function [population] = generate(pop_size, opt_set)
+function [population] = generate_population(pop_size, opt_set)
     dim = size(opt_set, 1);
     population = zeros(pop_size, dim);
     for i = 1:dim

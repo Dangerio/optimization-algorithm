@@ -34,7 +34,7 @@ classdef ShvedovSolver < Solver
             drop_size = floor(pop_size / 2);
             
             iter = 1;
-            obj.population = generate(pop_size, opt_set);
+            obj.population = generate_population(pop_size, opt_set);
             obj = obj.update_population(func, opt_set);
             func_diff = Inf;
             while iter <= obj.num_iter && func_diff > obj.tolerance
@@ -42,7 +42,7 @@ classdef ShvedovSolver < Solver
                     y_old = func(obj.population(1, :));
                 end
             
-                obj.population(end - (drop_size - 1) : end, :) = generate(drop_size, opt_set);
+                obj.population(end - (drop_size - 1) : end, :) = generate_population(drop_size, opt_set);
                 obj = obj.update_population(func, opt_set);
             
                 iter = iter + 1;
