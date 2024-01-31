@@ -47,6 +47,10 @@ classdef (Abstract) LinearDynamicModel
         end
     end
 
+    methods (Abstract = true)
+        generate_trajectory(obj, params, length);
+    end
+
     methods (Access = protected, Static = true)
         function [state_posteriori_expectation, state_posteriori_variance] = ... 
             compute_posteriori_state_distribution( ...

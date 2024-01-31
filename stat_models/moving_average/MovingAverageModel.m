@@ -10,11 +10,24 @@ classdef MovingAverageModel < LinearDynamicModel
         function obj = MovingAverageModel(lag_count)
             obj.lag_count = lag_count;
         end
+
+        function trajectory = generate_trajectory(obj, params, length)
+            trajectory = Trajectory(zeros(length, 1));
+            drift = params(1);
+            noise_std = params(2);
+            coefs = params(3:end);
+
+            noise = normrnd(0, noise_std, length + obj.lag_count, 1);
+            for time = 1:length
+                trajectory.endog(time) = drift + [1 coefs] * ... 
+                    noise(time:time + obj.lag_count);
+            end
+        end
     end
     
 
     methods (Access = protected)
-        % params = [mu, sigma^2, theta_1, ... theta_q]
+        % params = [mu, sigma, theta_1, ... theta_q]
         function state_transformation = compute_state_transformation( ...
             obj, ~, ~ ...
             )
@@ -40,7 +53,7 @@ classdef MovingAverageModel < LinearDynamicModel
             obj, ~, params ...
             )
             residuals_variance = [...
-                params(2) zeros(1, obj.lag_count);
+                params(2)^2 zeros(1, obj.lag_count);
                 zeros(obj.lag_count, 1) zeros(obj.lag_count)
             ];
         end
@@ -54,7 +67,7 @@ classdef MovingAverageModel < LinearDynamicModel
         function initial_state_variance = get_initial_state_variance(...
             obj, params ...
             )
-            initial_state_variance = eye(obj.lag_count + 1) * params(2);
+            initial_state_variance = eye(obj.lag_count + 1) * (params(2)^2);
         end
     end
 end
