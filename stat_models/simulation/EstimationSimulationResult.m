@@ -25,5 +25,23 @@ classdef EstimationSimulationResult < handle
             rmse = sqrt(mean((obj.estimates - true_params).^2, 1));
         end
     end
+
+    methods (Static = true)
+        function [merged_result] = merge(results)
+            param_count = size(results(1).estimates, 2);
+            sim_counts = [results.current_simulation] - 1;
+
+            merged_result = EstimationSimulationResult(sum(sim_counts), param_count);
+            merged_result.current_simulation = size(merged_result.estimates, 1) + 1;
+            
+            begin_index = 1;
+            for i = 1:size(results, 2)
+                sim_count = sim_counts(i);
+                merged_result.estimates(begin_index:begin_index + sim_count - 1, :) = results(i).estimates;
+                begin_index = begin_index + sim_count;
+            end
+        end
+
+    end
 end
 

@@ -13,6 +13,9 @@ classdef SaveHandler
         
         function [] = handle(obj, result_object)
             save(obj.filename, "result_object");
+            if ~isempty(getCurrentFileStore)
+                copyFileToStore(getCurrentFileStore, obj.filename + ".mat", obj.filename);
+            end
         end
     end
 end
