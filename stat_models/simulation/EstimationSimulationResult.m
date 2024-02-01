@@ -42,6 +42,23 @@ classdef EstimationSimulationResult < handle
             end
         end
 
+        function [summary_table] = aggregate_results(results, lengths, true_params, simulation_names)
+            simulation_count = size(results, 2);
+            mean_estimates = zeros(simulation_count, size(true_params, 2));
+            rmses = zeros(simulation_count, size(true_params, 2));
+
+            for i = 1:simulation_count
+                mean_estimates(i, :) = results(i).compute_mean_estimates();
+                rmses(i, :) = results(i).compute_estimates_rmse(true_params);
+            end
+            summary_table = table( ...
+                lengths', mean_estimates, rmses, ...
+                'VariableNames', ["length", "mean_estimates", "rmse"], ...
+                'RowNames', simulation_names ...
+            );
+
+        end
+
     end
 end
 
