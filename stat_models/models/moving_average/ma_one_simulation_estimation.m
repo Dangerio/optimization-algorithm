@@ -59,7 +59,11 @@ tic
            trajectory_length, @compute_max_likelihood_estimator, solver, num_handles);
 toc
 
-
- summary_table = EstimationSimulationResult.aggregate_results(results);
- save("result_summary", "summary_table");
+results = [
+    sim_small_first, sim_small_second, sim_small_third, sim_medium_first,
+    sim_medium_second, sim_medium_third, sim_big_first, sim_big_second,
+    sim_big_third
+];
+summary_table = EstimationSimulationResult.aggregate_results(results);
+save("result_summary", "summary_table");
  
