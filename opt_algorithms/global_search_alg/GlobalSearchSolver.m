@@ -7,7 +7,13 @@ classdef GlobalSearchSolver < Solver
     end
     
     methods
-        function obj = GlobalSearchSolver()
+        function obj = GlobalSearchSolver(verbose)
+            if nargin == 0
+                verbose = false;
+            end
+            if verbose
+                obj.gs_solver.PlotFcn = {@gsplotbestf, @gsplotfunccount};
+            end
         end
         
         function [y, x] = minimize(obj, func, opt_set)

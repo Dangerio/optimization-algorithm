@@ -8,7 +8,17 @@ classdef SurrogateOptSolver < Solver
     end
     
     methods
-        function obj = SurrogateOptSolver()
+        function obj = SurrogateOptSolver(verbose)
+            if nargin == 0
+                verbose = false;
+            end
+            if verbose
+                obj.options =  optimoptions(@surrogateopt,'UseVectorized',true);
+            else
+                obj.options =  optimoptions(@surrogateopt,'UseVectorized',true, ...
+                'PlotFcn', []);
+            end
+            
         end
         
         function [y, x] = minimize(obj, func, opt_set)
