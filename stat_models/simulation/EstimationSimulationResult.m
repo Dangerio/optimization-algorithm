@@ -6,7 +6,7 @@ classdef EstimationSimulationResult < handle
         true_params
         estimates % Mat[sim_count, param_count]
         current_simulation = 1
-        simulation_name
+        simulation_name = "Simulation"
         length
     end
     
