@@ -1,4 +1,4 @@
-classdef StochVolQML < LinearDynamicModel
+classdef StochVolModel < LinearDynamicModel
 
 
     properties (Constant = true)

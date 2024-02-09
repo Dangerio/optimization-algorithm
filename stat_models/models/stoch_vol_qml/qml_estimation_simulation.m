@@ -4,7 +4,7 @@ trajectory_length = 4000;
 num_workers = 6;
 solver = GlobalSearchSolver();
 
-cv_qml_model = StochVolQML;
+cv_qml_model = StochVolModel;
 true_params = [-0.7, 0.9, 0.4];
 params_opt_set = [-1.5, 0; 1e-8, 1; 1e-8, 1.2];
 
