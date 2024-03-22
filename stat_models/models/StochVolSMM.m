@@ -18,7 +18,9 @@ classdef StochVolSMM < AbstractMoment
             trajectory = Trajectory(zeros(length, 1));
             % hidden_ar_values = obj.generate_hidden_ar_one_process(params, length, seed);
             hidden_ar_values = zeros(length, 1);
+            % hidden_ar_values(1) = randn(stream1) * sqrt(params(3)^2 / (1 - params(2)^2));
             hidden_ar_values(1) = randn(stream1) * sqrt(params(3)^2 / (1 - params(2)^2));
+
             noise_values = randn(stream2, length - 1, 1) * params(3);
             for time = 2:length
                 hidden_ar_values(time) = params(2) * hidden_ar_values(time - 1) + noise_values(time - 1);
@@ -26,7 +28,8 @@ classdef StochVolSMM < AbstractMoment
             
             noise = log(randn(stream3, length, 1).^2) - obj.exp_log_sq_stdnorm;
             drift = params(1) / (1 - params(2)) - double(eulergamma) - log(2);
-            trajectory.endog = drift + hidden_ar_values + noise;
+            endog = drift + hidden_ar_values + noise;
+            trajectory.endog = sqrt(exp(endog));
         end
     end
 
