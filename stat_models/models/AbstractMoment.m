@@ -6,14 +6,11 @@ classdef (Abstract) AbstractMoment
 
         function mse = compute_smm_mse(obj, time_series, params)
             time_series_real = time_series.endog.';
-            % time_series_real = time_series;
 
             simulational_length = obj.simulational_length_size * size(time_series_real, 2);
 
-            stream = RandStream('dsfmt19937','Seed',3);
-            rng(stream)
-            time_series_simulated = obj.generate_trajectory(params, simulational_length).endog.';
-            reset(stream);
+
+            time_series_simulated = obj.generate_trajectory(params, simulational_length, 1).endog.';
 
             simulated_moments = obj.compute_moments(time_series_simulated);
 
@@ -34,14 +31,13 @@ classdef (Abstract) AbstractMoment
             %        size(powers_first) == size(lags_between_series)), ...
             %        'Second, Third and Fourth variables should have same size')
 
-
             max_lag =  max(lags_between_series) + 1;
             length_timeseries = size(time_series, 2);
-
             time_series_lagged = lagmatrix(time_series, lags_between_series).';
 
-            time_series_power_lagged = abs(bsxfun( @power, time_series_lagged, power_first ));
+            time_series_power_lagged = abs(bsxfun( @power, time_series_lagged, power_first));
             time_series_power_nolagged = abs(time_series.^power_second);
+            
 
             moments = (time_series_power_lagged .* time_series_power_nolagged);
             moments = mean(moments(:, max_lag:length_timeseries), 2);

@@ -4,32 +4,48 @@ classdef StochVolSMM < AbstractMoment
     properties (Constant = true)
         exp_log_sq_stdnorm = -double((eulergamma + log(2)));
         var_log_sq_stdnorm = double(eulergamma^2 + eulergamma * log(4)) + log(2)^2 + pi^2 / 2 - double((eulergamma + log(2))^2);
+
     end
 
     methods
-        function trajectory = generate_trajectory(obj, params, length)
+        function trajectory = generate_trajectory(obj, params, length, seed)
+            if nargin == 3
+                seed = randi(100000);
+            end
+            stream1 = RandStream('swb2712','Seed', seed);
+            stream2 = RandStream('swb2712','Seed', seed + 1);
+            stream3 = RandStream('swb2712','Seed', seed + 2);
             trajectory = Trajectory(zeros(length, 1));
-            hidden_ar_values = obj.generate_hidden_ar_one_process(params, length);
-            noise = obj.generate_noise_for_observed_variable(length);
+            % hidden_ar_values = obj.generate_hidden_ar_one_process(params, length, seed);
+            hidden_ar_values = zeros(length, 1);
+            hidden_ar_values(1) = randn(stream1) * sqrt(params(3)^2 / (1 - params(2)^2));
+            noise_values = randn(stream2, length - 1, 1) * params(3);
+            for time = 2:length
+                hidden_ar_values(time) = params(2) * hidden_ar_values(time - 1) + noise_values(time - 1);
+            end
+            
+            noise = log(randn(stream3, length, 1).^2) - obj.exp_log_sq_stdnorm;
             drift = params(1) / (1 - params(2)) - double(eulergamma) - log(2);
             trajectory.endog = drift + hidden_ar_values + noise;
         end
     end
 
-    methods (Access = private)
-        function ar_values = generate_hidden_ar_one_process(~, params, length)
-            ar_values = zeros(length, 1);
-            ar_values(1) = normrnd(0, sqrt(params(3)^2 / (1 - params(2)^2)));
-            noise_values = normrnd(0, params(3), length - 1, 1);
-            for time = 2:length
-                ar_values(time) = params(2) * ar_values(time - 1) + noise_values(time - 1);
-            end
-        end
+    % methods (Access = private)
+    %     function ar_values = generate_hidden_ar_one_process(~, params, length, seed)
+    %         stream = RandStream('mcg16807','Seed', seed + 1);
+    %         ar_values = zeros(length, 1);
+    %         ar_values(1) = randn(stream) * params(3)^2 / (1 - params(2)^2);
+    %         noise_values = randn(stream, length - 1, 1) * params(3)^2;
+    %         for time = 2:length
+    %             ar_values(time) = params(2) * ar_values(time - 1) + noise_values(time - 1);
+    %         end
+    %     end
 
-        function noise_values = generate_noise_for_observed_variable(obj, length)
-            noise_values = log(normrnd(0, 1, length, 1).^2) - obj.exp_log_sq_stdnorm;
-        end
-    end
+        % function noise_values = generate_noise_for_observed_variable(obj, length)
+        % 
+        %     noise_values = log(randn(obj.stream, length, 1).^2) - obj.exp_log_sq_stdnorm;
+        % end
+    % end
 
 
     methods (Access = protected)
@@ -52,10 +68,9 @@ classdef StochVolSMM < AbstractMoment
         end
 
         function k =  simulational_length_size(~)
-            k = 1;
+            k = 10;
         end
-        
-
+        %r^{power_second}_t * r^{power_first}_{t-lags}
 
     end
 end
