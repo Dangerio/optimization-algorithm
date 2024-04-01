@@ -29,9 +29,30 @@ classdef StochVolSMM < AbstractMoment
             noise = log(randn(stream3, length, 1).^2) - obj.exp_log_sq_stdnorm;
             drift = params(1) / (1 - params(2)) - double(eulergamma) - log(2);
             endog = drift + hidden_ar_values + noise;
-            trajectory.endog = sqrt(exp(endog));
+            trajectory.endog = exp(endog/2);
         end
     end
+
+        % 
+        %     function trajectory = generate_trajectory(obj, params, length, seed)
+        %     if nargin == 3
+        %         seed = randi(10000000);
+        %     end
+        %     % stream1 = RandStream('swb2712','Seed', seed);
+        %     stream2 = RandStream('swb2712','Seed', seed + 1);
+        %     stream3 = RandStream('swb2712','Seed', seed + 2);
+        %     trajectory = Trajectory(zeros(length, 1));
+        %     hidden_ar_values = zeros(length, 1);
+        %     hidden_ar_values(1) = param(1)/(1-param(2));
+        % 
+        %     noise_values = randn(stream2, length - 1, 1) * params(3);
+        %     for time = 2:length
+        %         hidden_ar_values(time) = params(1) + params(2) * hidden_ar_values(time - 1) + noise_values(time - 1);
+        %     end
+        % 
+        %     noise = randn(stream3, length, 1);
+        %     trajectory.endog = exp(hidden_ar_values/2) .* noise;
+        % end
 
     % methods (Access = private)
     %     function ar_values = generate_hidden_ar_one_process(~, params, length, seed)
@@ -74,6 +95,18 @@ classdef StochVolSMM < AbstractMoment
             k = 10;
         end
         %r^{power_second}_t * r^{power_first}_{t-lags}
+
+        function bool =  weight_bool(~)
+            bool = true;
+        end
+
+        function length = length_sim_for_weight(~)
+            length = 200000;
+        end
+
+        function w_length = length_cycle_weight(~)
+            w_length = 10;
+        end
 
     end
 end

@@ -3,14 +3,15 @@ classdef ShvedovSolver < Solver
     %   Detailed explanation goes here
     
     properties
-        eps = 1e-16;
+        eps = 1e-8;
         alpha = 0.5;
-        max_r = 100;
-        beta = 1;
-        num_iter = 1000;
-        tolerance = 1e-16;
-        verbose = false;
-        golden_search_solver = GoldenRatioSolver(50, 0);
+        max_r = 5;
+        beta = 0.99;
+        num_iter = 100;
+        tolerance = 1e-6;
+        verbose = true;
+        golden_search_solver = GoldenRatioSolver(10, 0);
+        max_inside_r = 10;
         population
         
     end
@@ -30,27 +31,31 @@ classdef ShvedovSolver < Solver
 
         function [final_value, best_argument] = minimize(obj, func, opt_set)
             dim = size(opt_set, 1);
-            pop_size = 3 + dim * 2;
+            pop_size = 3 + dim*2;
             drop_size = floor(pop_size / 2);
-            
+
             iter = 1;
             obj.population = generate_population(pop_size, opt_set);
             obj = obj.update_population(func, opt_set);
             func_diff = Inf;
             while iter <= obj.num_iter && func_diff > obj.tolerance
-                if mod(iter, 100) == 1
-                    y_old = func(obj.population(1, :));
-                end
+                % if mod(iter, 100) == 1
+                %     y_old = func(obj.population(1, :));
+                % end
+
+                y_old = func(obj.population(1, :));
             
                 obj.population(end - (drop_size - 1) : end, :) = generate_population(drop_size, opt_set);
                 obj = obj.update_population(func, opt_set);
             
                 iter = iter + 1;
-                if mod(iter, 100) == 99
-                    func_diff = abs(func(obj.population(1, :)) - y_old);
-                end
-            
-                if obj.verbose && mod(iter, 50) == 0
+                % if mod(iter, 100) == 99
+                %     func_diff = abs(func(obj.population(1, :)) - y_old);
+                % end
+                func_diff = abs(func(obj.population(1, :)) - y_old);
+                if obj.verbose
+
+                % if obj.verbose && mod(iter, 1) == 5
                     format short e
                     disp('Точки')
                     disp(obj.population)
@@ -63,6 +68,8 @@ classdef ShvedovSolver < Solver
             if iter > obj.num_iter
                 disp("WARNING")
                 disp("Max limit on iterations has reached, probably the algorithm fails to converge.")
+            else
+                disp("Max limit on iterations not reached, probably the algorithm converged.")
             end
 
             best_argument = obj.population(1,:);
@@ -134,9 +141,10 @@ classdef ShvedovSolver < Solver
     
         function [obj] = update_population(obj, func, opt_set)
             obj.population = ShvedovSolver.sort_by_func_value(obj.population, func);
-            big_r = true;
             previous_value = Inf;
-            while abs(previous_value - func(obj.population(end, :))) > obj.eps &&  big_r
+            inside_r = 1;
+            while abs(previous_value - func(obj.population(end, :))) > obj.eps &&  inside_r < obj.max_inside_r
+                inside_r = inside_r + 1;
                 r = 1;
                 population_s = obj.population(end,:);
                 previous_value = func(population_s);
@@ -152,9 +160,6 @@ classdef ShvedovSolver < Solver
                         r = r + 1;
                     end
                     
-                end
-                if r == obj.max_r
-                    big_r = false;
                 end
             end
         end
