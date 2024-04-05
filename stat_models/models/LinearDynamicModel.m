@@ -9,6 +9,7 @@ classdef (Abstract) LinearDynamicModel
         function log_likelihood = compute_log_likelihood( ...
                 obj, trajectory, params ...
             )
+            trajectory = obj.transform_data_to_ldm(trajectory);
             log_likelihood = 0;
             state_expectation = obj.get_initial_state_expectation(params);
             state_variance = obj.get_initial_state_variance(params);
@@ -48,7 +49,7 @@ classdef (Abstract) LinearDynamicModel
     end
 
     methods (Abstract = true)
-        generate_trajectory(obj, params, length);
+        generate_trajectory(obj, params, length, is_initial_value_random, stream);
     end
 
     methods (Access = protected, Static = true)
@@ -102,6 +103,7 @@ classdef (Abstract) LinearDynamicModel
     end
 
     methods (Access = protected, Abstract = true)
+        transform_data_to_ldm(obj, trajectory);
         compute_state_transformation(obj, exog, params);
         compute_endog_transformation(obj, exog, params);
         compute_endog_shift(obj, exog, params);

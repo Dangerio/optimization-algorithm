@@ -11,7 +11,9 @@ classdef MovingAverageModel < LinearDynamicModel
             obj.lag_count = lag_count;
         end
 
-        function trajectory = generate_trajectory(obj, params, length)
+        function trajectory = generate_trajectory(obj, params, length, ~, stream)
+            RandStream.setGlobalStream(stream);
+
             trajectory = Trajectory(zeros(length, 1));
             drift = params(1);
             noise_std = params(2);
@@ -28,6 +30,10 @@ classdef MovingAverageModel < LinearDynamicModel
 
     methods (Access = protected)
         % params = [mu, sigma, theta_1, ... theta_q]
+        function [transformed_trajectory] = transform_data_to_ldm(~, trajectory)
+            transformed_trajectory = trajectory;
+        end
+
         function state_transformation = compute_state_transformation( ...
             obj, ~, ~ ...
             )

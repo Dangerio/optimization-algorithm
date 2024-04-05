@@ -7,19 +7,30 @@ classdef StochVolModel < LinearDynamicModel
     end
 
     methods
-        function trajectory = generate_trajectory(obj, params, length)
+        function trajectory = generate_trajectory(obj, params, length, is_initial_value_random, stream)
+            RandStream.setGlobalStream(stream);
             trajectory = Trajectory(zeros(length, 1));
-            hidden_ar_values = obj.generate_hidden_ar_one_process(params, length);
+
+            hidden_ar_values = obj.generate_hidden_ar_one_process(params, length, is_initial_value_random);
             noise = obj.generate_noise_for_observed_variable(length);
             drift = params(1) / (1 - params(2)) - double(eulergamma) - log(2);
-            trajectory.endog = drift + hidden_ar_values + noise;
+            transformed_endog = drift + hidden_ar_values + noise;
+            
+            trajectory.endog = exp(transformed_endog / 2);
         end
+
     end
 
     methods (Access = private)
-        function ar_values = generate_hidden_ar_one_process(~, params, length)
+        function ar_values = generate_hidden_ar_one_process(~, params, length, is_initial_value_random)
             ar_values = zeros(length, 1);
-            ar_values(1) = normrnd(0, sqrt(params(3)^2 / (1 - params(2)^2)));
+
+            if is_initial_value_random
+                ar_values(1) = normrnd(0, sqrt(params(3)^2 / (1 - params(2)^2)));
+            else
+                ar_values(1) = 0;
+            end
+
             noise_values = normrnd(0, params(3), length - 1, 1);
             for time = 2:length
                 ar_values(time) = params(2) * ar_values(time - 1) + noise_values(time - 1);
@@ -34,6 +45,13 @@ classdef StochVolModel < LinearDynamicModel
 
     methods (Access = protected)
         % params = [theta_1, theta_2, theta_3]
+
+        function [transformed_trajectory] = transform_data_to_ldm(~, trajectory)
+            transformed_trajectory = Trajectory(log(trajectory.endog.^2));
+        end
+
+
+        
         function state_transformation = compute_state_transformation( ...
             ~, ~, params ...
             )
