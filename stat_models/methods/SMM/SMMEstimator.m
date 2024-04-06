@@ -15,8 +15,7 @@ classdef SMMEstimator < AbstactSMMEstimator
         
         function params = compute_estimates(obj, data, model, param_opt_set, solver)
             weight_matrix = eye(obj.moments_calculator.get_moments_count());
-            moments_mse = @(params_matrix) obj.estimate_moments_and_compute_mse(data, model, params_matrix, weight_matrix);
-            [~, params] = solver.minimize(moments_mse, param_opt_set);
+            params = obj.minimize_smm_objective_function(data, model, param_opt_set, weight_matrix, solver);
         end
     end
 
