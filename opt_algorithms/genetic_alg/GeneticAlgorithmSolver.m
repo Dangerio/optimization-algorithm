@@ -7,7 +7,14 @@ classdef GeneticAlgorithmSolver < Solver
     end
     
     methods
-        function obj = GeneticAlgorithmSolver()
+        function obj = GeneticAlgorithmSolver(verbose)
+            if nargin == 0
+                verbose = false;
+            end
+
+            if verbose
+                obj.options = optimoptions(obj.options, 'PlotFcn', @gaplotbestf);
+            end
         end
         
         function [y, x] = minimize(obj, func, opt_set)
