@@ -7,7 +7,13 @@ classdef ParticleSwarmMatlabSolver < Solver
     end
     
     methods
-        function obj = ParticleSwarmMatlabSolver()
+        function obj = ParticleSwarmMatlabSolver(verbose)
+            if nargin == 0
+                verbose = false;
+            end
+            if verbose
+                obj.options = optimoptions(@particleswarm,'UseVectorized',true, 'PlotFcn', 'pswplotbestf');
+            end
         end
         
         function [y, x] = minimize(obj, func, opt_set)
