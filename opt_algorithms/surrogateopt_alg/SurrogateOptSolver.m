@@ -3,8 +3,7 @@ classdef SurrogateOptSolver < Solver
     %   Detailed explanation goes here
     
     properties
-        options = optimoptions(@surrogateopt,'UseVectorized',true, ...
-            'PlotFcn', []);
+        options = optimoptions(@surrogateopt,'UseVectorized',true)
     end
     
     methods
@@ -13,10 +12,9 @@ classdef SurrogateOptSolver < Solver
                 verbose = false;
             end
             if verbose
-                obj.options =  optimoptions(@surrogateopt,'UseVectorized',true);
-            else
-                obj.options =  optimoptions(@surrogateopt,'UseVectorized',true, ...
-                'PlotFcn', []);
+                obj.options = optimoptions(obj.options, 'PlotFcn', 'surrogateoptplot');
+            else 
+                obj.options = optimoptions(obj.options, 'PlotFcn', []);
             end
             
         end

@@ -12,7 +12,7 @@ classdef ParticleSwarmMatlabSolver < Solver
                 verbose = false;
             end
             if verbose
-                obj.options = optimoptions(@particleswarm,'UseVectorized',true, 'PlotFcn', 'pswplotbestf');
+                obj.options = optimoptions(obj.options, 'PlotFcn', 'pswplotbestf');
             end
         end
         
