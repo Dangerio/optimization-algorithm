@@ -2,14 +2,14 @@ classdef WSMMEstimator < AbstactSMMEstimator
     %WSMMESTIMATOR Implementation of SMM with weight matrix (WSMM)
     
     properties
-        moments_calculator
+        moments_calculator = MomentsCalculator;
         simulational_length_factor = 10
         sim_length_for_alpha_estimate = 2.5e6
         length_cycle_weight = 10
         smoothing_factor = 0.5
         max_iter = 20
         tolerance = 2.5e-3
-        verbose = true
+        verbose = false
     end
 
     properties (Access = private)
@@ -18,7 +18,9 @@ classdef WSMMEstimator < AbstactSMMEstimator
     
     methods
         function obj = WSMMEstimator(moments_calculator, simulational_length_factor, sim_length_for_alpha_estimate, length_cycle_weight, smoothing_factor, max_iter, tolerance, verbose)
-            obj.moments_calculator = moments_calculator;
+            if nargin >= 1
+                obj.moments_calculator = moments_calculator;
+            end
             if nargin >= 2
                 obj.simulational_length_factor = simulational_length_factor;
             end

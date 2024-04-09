@@ -1,14 +1,16 @@
 classdef SMMEstimator < AbstactSMMEstimator
     %SMMESTIMATOR Implementation of vanilla SMM (with Identity weight matrix)
     properties 
-        moments_calculator
+        moments_calculator = MomentsCalculator;
         simulational_length_factor = 10
     end
     
     methods
         function obj = SMMEstimator(moments_calculator, simulational_length_factor)
-            obj.moments_calculator = moments_calculator;
-            if nargin == 2
+            if nargin >= 1
+                obj.moments_calculator = moments_calculator;
+            end
+            if nargin >= 2
                 obj.simulational_length_factor = simulational_length_factor;
             end
         end
