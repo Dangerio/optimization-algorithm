@@ -4,24 +4,48 @@ classdef EstimationSimulationResult < handle
     
     properties
         true_params
-        estimates % Mat[sim_count, param_count]
+        param_opt_set
+        length
+        gen_type
         current_simulation = 1
         simulation_name = "Simulation"
-        length
+        model
+        method
+        solver
+        
+        
+        estimates % Mat[sim_count, param_count]
+        gen_states % Mat[sim_count, gen_state_size]
+        wall_time % Mat[sim_count, 1]
+        cpu_time % Mat[sim_count, 1]
     end
     
     methods
-        function obj = EstimationSimulationResult(sim_count, length, true_params, simulation_name)
+        function obj = EstimationSimulationResult(sim_count, length, gen_type, true_params, param_opt_set, model, method, solver, simulation_name)
             obj.true_params = true_params;
+            obj.param_opt_set = param_opt_set;
             obj.length = length;
-            obj.estimates = zeros(sim_count, size(true_params, 2));
-            if nargin == 4
+            obj.gen_type = gen_type;
+            obj.model = model;
+            obj.method = method;
+            obj.solver = solver;
+            if nargin == 7
                 obj.simulation_name = simulation_name;
+
+
+            obj.estimates = zeros(sim_count, size(true_params, 2));
+            obj.wall_time = zeros(sim_count, 1);
+            obj.cpu_time = zeros(sim_count, 1);
+            obj.gen_states = zeros(sim_count, size(RandStream(gen_type).state, 1));
             end
         end
 
-        function add_new_estimate(obj, estimate)
+        function add_new_estimate(obj, estimate, gen_state, wall_time, cpu_time)
             obj.estimates(obj.current_simulation, :) = estimate;
+            obj.gen_states(obj.current_simulation, :) = gen_state;
+            obj.wall_time(obj.current_simulation, :) = wall_time;
+            obj.cpu_time(obj.current_simulation, :) = cpu_time;
+
             obj.current_simulation = obj.current_simulation + 1;
         end
         
@@ -32,20 +56,42 @@ classdef EstimationSimulationResult < handle
         function rmse = compute_estimates_rmse(obj)
             rmse = sqrt(mean((obj.estimates - obj.true_params).^2, 1));
         end
+
+        function trajectory = get_trajectory(obj, index)
+            stream = RandStream(obj.gen_type);
+            stream.State = uint32(obj.gen_states(index, :)');
+            trajectory = obj.model.generate_trajectory(obj.true_params, obj.length, true, stream);
+        end
+
+        function obj = join(obj, other)
+            merged_estimates = [obj.estimates; other.estimates];
+            merged_cpu_time = [obj.cpu_time; other.cpu_time];
+            merged_wall_time = [obj.wall_time; other.wall_time];
+            merged_gen_states = [obj.gen_states; other.gen_states];
+            obj.estimates = merged_estimates;
+            obj.cpu_time = merged_cpu_time;
+            obj.wall_time = merged_wall_time;
+            obj.gen_states = merged_gen_states;
+
+            obj.current_simulation = obj.current_simulation + other.current_simulation - 1;
+        end
     end
 
     methods (Static = true)
         function [merged_result] = merge(results)
-            sim_counts = [results.current_simulation] - 1;
-
-            merged_result = EstimationSimulationResult(sum(sim_counts), results(1).length, results(1).true_params);
-            merged_result.current_simulation = size(merged_result.estimates, 1) + 1;
-            
-            begin_index = 1;
-            for i = 1:size(results, 2)
-                sim_count = sim_counts(i);
-                merged_result.estimates(begin_index:begin_index + sim_count - 1, :) = results(i).estimates;
-                begin_index = begin_index + sim_count;
+            merged_result = results(1);
+            for i = 2:size(results, 2)
+                merged_result = merged_result.join(results(i));
+            % sim_counts = [results.current_simulation] - 1;
+            % 
+            % merged_result = EstimationSimulationResult(sum(sim_counts), results(1).length, results(1).true_params);
+            % merged_result.current_simulation = size(merged_result.estimates, 1) + 1;
+            % 
+            % begin_index = 1;
+            % for i = 1:size(results, 2)
+            %     sim_count = sim_counts(i);
+            %     merged_result.estimates(begin_index:begin_index + sim_count - 1, :) = results(i).estimates;
+            %     begin_index = begin_index + sim_count;
             end
         end
 
