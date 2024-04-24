@@ -6,7 +6,7 @@ qml_method = MLEstimator();
 true_params = [-0.7, 0.9, 0.4];
 params_opt_set = [-1.5, 0; 1e-8, 1; 1e-8, 1.2];
 
-solver = GlobalSearchSolver();
+solver = SurrogateOptSolver();
 num_handles = 10;
 trajectory_length = 4000;
 
