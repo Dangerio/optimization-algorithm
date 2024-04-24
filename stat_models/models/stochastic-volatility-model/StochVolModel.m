@@ -8,37 +8,30 @@ classdef StochVolModel < LinearDynamicModel
 
     methods
         function trajectory = generate_trajectory(obj, params, length, is_initial_value_random, stream)
-            RandStream.setGlobalStream(stream);
             trajectory = Trajectory(zeros(length, 1));
-
-            hidden_ar_values = obj.generate_hidden_ar_one_process(params, length, is_initial_value_random);
-            noise = obj.generate_noise_for_observed_variable(length);
-            drift = params(1) / (1 - params(2)) - double(eulergamma) - log(2);
-            transformed_endog = drift + hidden_ar_values + noise;
             
-            trajectory.endog = exp(transformed_endog / 2);
+            hidden_ar_values = obj.generate_hidden_ar_one_process(params, length, is_initial_value_random, stream);
+            sigma = exp(params(1) / (2 * (1 - params(2))));
+            noise = randn(stream, length, 1);
+            trajectory.endog = exp(hidden_ar_values / 2) .* noise * sigma;
         end
 
     end
 
     methods (Access = private)
-        function ar_values = generate_hidden_ar_one_process(~, params, length, is_initial_value_random)
+        function ar_values = generate_hidden_ar_one_process(~, params, length, is_initial_value_random, stream)
             ar_values = zeros(length, 1);
 
             if is_initial_value_random
-                ar_values(1) = normrnd(0, sqrt(params(3)^2 / (1 - params(2)^2)));
+                ar_values(1) = randn(stream) * sqrt(params(3)^2 / (1 - params(2)^2));
             else
                 ar_values(1) = 0;
             end
-
-            noise_values = normrnd(0, params(3), length - 1, 1);
+            
+            noise_values = randn(stream, length - 1, 1) * params(3);
             for time = 2:length
                 ar_values(time) = params(2) * ar_values(time - 1) + noise_values(time - 1);
             end
-        end
-
-        function noise_values = generate_noise_for_observed_variable(obj, length)
-            noise_values = log(normrnd(0, 1, length, 1).^2) - obj.exp_log_sq_stdnorm;
         end
     end
 

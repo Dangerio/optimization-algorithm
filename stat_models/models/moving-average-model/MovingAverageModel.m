@@ -12,14 +12,12 @@ classdef MovingAverageModel < LinearDynamicModel
         end
 
         function trajectory = generate_trajectory(obj, params, length, ~, stream)
-            RandStream.setGlobalStream(stream);
-
             trajectory = Trajectory(zeros(length, 1));
             drift = params(1);
             noise_std = params(2);
             coefs = params(3:end);
-
-            noise = normrnd(0, noise_std, length + obj.lag_count, 1);
+            
+            noise = randn(stream, length + obj.lag_count, 1) * noise_std;
             for time = 1:length
                 trajectory.endog(time) = drift + [1 coefs] * ... 
                     noise(time:time + obj.lag_count);
