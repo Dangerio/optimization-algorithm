@@ -77,7 +77,6 @@ classdef WSMMEstimator < AbstactSMMEstimator
                     weight_matrix = obj.compute_weight_matrix(model, params, obj.simulational_length_factor * data.get_length());
                 else
                     weight_matrix = (1 - obj.smoothing_factor) * obj.compute_weight_matrix(model, params, obj.simulational_length_factor * data.get_length()) + obj.smoothing_factor * old_weight_matrix;
-                
                 end
                 old_params = params;     
             end
@@ -88,7 +87,7 @@ classdef WSMMEstimator < AbstactSMMEstimator
         end
     end
 
-    methods (Access = private)
+    methods
         function alpha_estimate = compute_alpha_estimate(obj, model, params)
             is_initial_value_random = true;
             trajectory = model.generate_trajectory( ...
