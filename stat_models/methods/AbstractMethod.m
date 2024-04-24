@@ -6,5 +6,10 @@ classdef (Abstract) AbstractMethod
     methods (Abstract = true)       
         compute_estimates(obj, data, model, param_opt_set, solver)
     end
+
+    methods
+        function obj = enable_multidatagen(obj, ~, ~, ~, ~)
+        end
+    end
 end
 

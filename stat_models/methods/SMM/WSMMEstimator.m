@@ -2,6 +2,9 @@ classdef WSMMEstimator < AbstactSMMEstimator
     %WSMMESTIMATOR Implementation of SMM with weight matrix (WSMM)
     
     properties
+        stream_batch_size = 3;
+        stream_batch_loader
+
         moments_calculator = MomentsCalculator;
         simulational_length_factor = 10
         sim_length_for_alpha_estimate = 2.5e6
@@ -11,13 +14,10 @@ classdef WSMMEstimator < AbstactSMMEstimator
         tolerance = 2.5e-3
         verbose = false
     end
-
-    properties (Access = private)
-        stream = RandStream("mt19937ar", "Seed", 1)
-    end
     
     methods
         function obj = WSMMEstimator(moments_calculator, simulational_length_factor, sim_length_for_alpha_estimate, length_cycle_weight, smoothing_factor, max_iter, tolerance, verbose)
+            obj = obj.initialize_dummy_rs_pool();
             if nargin >= 1
                 obj.moments_calculator = moments_calculator;
             end
@@ -84,24 +84,27 @@ classdef WSMMEstimator < AbstactSMMEstimator
             if iter == obj.max_iter
                 warning("Algorithm terminated as the number of iterations exceeds max_iter.")
             end
+            obj.stream_batch_loader.next();
         end
     end
 
     methods
         function alpha_estimate = compute_alpha_estimate(obj, model, params)
+            obj.stream_batch_loader.pool.reset();
             is_initial_value_random = true;
             trajectory = model.generate_trajectory( ...
                  params, obj.sim_length_for_alpha_estimate, ...
-                 is_initial_value_random, obj.stream ...
+                 is_initial_value_random, obj.stream_batch_loader.get_random_stream(2) ...
              );
             alpha_estimate = obj.compute_mean_moments(trajectory);
             end
 
         function moments_matrix = compute_moments_matrix(obj, model, params, simulated_length)
+            obj.stream_batch_loader.pool.reset();
             is_initial_value_random = true;
             trajectory = model.generate_trajectory( ...
                  params, simulated_length, ...
-                 is_initial_value_random, obj.stream ...
+                 is_initial_value_random, obj.stream_batch_loader.get_random_stream(3) ...
              );
             moments_matrix =  obj.moments_calculator.compute_moments(trajectory.endog.'); 
         end

@@ -2,12 +2,28 @@ classdef (Abstract) AbstactSMMEstimator < AbstractMethod
     %ABSTACTSMMESTIMATOR Abstact class for vanilla and weighed SMM.
    
     properties (Abstract = true)
+        stream_batch_size;
+        stream_batch_loader;
         moments_calculator
         simulational_length_factor
     end
 
-    properties (Access = private)
-        stream = RandStream("mt19937ar", "Seed", 0)
+    properties
+        has_multidatagen_enabled = false;
+    end
+
+    methods
+        function obj = enable_multidatagen(obj, first_free_substream, substream_count, num_workers, cur_worker_idx)
+            if ~obj.has_multidatagen_enabled
+                obj.has_multidatagen_enabled = true;
+                obj.stream_batch_loader = RandomStreamPool(obj.stream_batch_size, num_workers, first_free_substream, substream_count).get_loader(cur_worker_idx);
+            end
+        end
+
+        function obj = initialize_dummy_rs_pool(obj)
+            obj.has_multidatagen_enabled = false;
+            obj.stream_batch_loader = RandomStreamPool(obj.stream_batch_size, 1, 1).get_loader(1);
+        end
     end
 
     
@@ -45,9 +61,9 @@ classdef (Abstract) AbstactSMMEstimator < AbstractMethod
     methods (Access = private)
 
         function time_series_simulated = generate_simulated_data(obj, length, params, model)
-            obj.stream.reset();
+            obj.stream_batch_loader.pool.reset();
             is_initial_value_random = false;
-            time_series_simulated = model.generate_trajectory(params, length, is_initial_value_random, obj.stream);
+            time_series_simulated = model.generate_trajectory(params, length, is_initial_value_random, obj.stream_batch_loader.get_random_stream(1));
         end
         
         
