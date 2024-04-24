@@ -2,7 +2,7 @@ classdef RandomStreamPool < handle
     %RANDOMSTREAMPOOL Pool of mutually independent RandomStreams 
     
     properties
-        stream = RandStream("threefry4x64_20");
+        stream;
         batch_size
         loaders_count
         first = 1
@@ -11,7 +11,7 @@ classdef RandomStreamPool < handle
     end
     
     methods
-        function obj = RandomStreamPool(batch_size, loaders_count, first, size)
+        function obj = RandomStreamPool(batch_size, loaders_count, first, size, gen_type)
             obj.batch_size = batch_size;
             obj.loaders_count = loaders_count;
 
@@ -21,6 +21,12 @@ classdef RandomStreamPool < handle
             if nargin >= 4
                 obj.size = size;
             end
+
+            if nargin >= 5
+                obj.stream = RandStream(gen_type);
+            else
+                obj.stream = RandStream("threefry4x64_20");
+            end 
         end
         
         function loader = get_loader(obj, index)
