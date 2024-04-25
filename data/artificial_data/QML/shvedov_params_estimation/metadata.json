@@ -1,0 +1,1 @@
+{"simulation_name":"shvedov_params_estimation","model":"StochVolModel","true_params":[-0.7,0.9,0.4],"param_opt_set":[[-1,0],[-0.999999,0.999999],[1E-6,1]],"length":4000,"method":"MLEstimator","solver":"GlobalSearchSolver","simulation_count":500,"generator_type":"threefry4x64_20"}
