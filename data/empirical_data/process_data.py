@@ -63,4 +63,4 @@ for first_part, second_part in tqdm(grouped_data_files):
     df_list.append(merged_df.drop(0))
 
 result_df = pd.concat(df_list)
-result_df.to_csv("clean_data.csv", sep=",")
+result_df.to_csv("clean_data.csv", sep=",", index=False)
