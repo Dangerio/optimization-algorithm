@@ -75,6 +75,50 @@ classdef EstimationSimulationResult < handle
 
             obj.current_simulation = obj.current_simulation + other.current_simulation - 1;
         end
+
+        function [] = export(obj, path, output_foldername)
+            old_dir = pwd;
+            if nargin < 2
+                path = pwd;
+            end
+            if nargin < 3
+                output_foldername = obj.simulation_name;
+            end
+            cd(path)
+            if isfolder(output_foldername)
+                cd(old_dir);
+                error("Output directory exists, remove it if you want to overwrite.")
+            end
+            mkdir(output_foldername);
+            cd(output_foldername);
+            
+            metadata = struct(...
+                "simulation_name", obj.simulation_name, ...
+                "model", class(obj.model), ...
+                "true_params", obj.true_params, ...
+                "param_opt_set", obj.param_opt_set, ...
+                "length", obj.length, ...
+                "method", class(obj.method), ...
+                "solver", class(obj.solver), ...
+                "simulation_count", obj.current_simulation - 1, ...
+                "generator_type", obj.gen_type ...
+            );
+
+            meta_file = fopen('metadata.json', 'w');
+            fwrite(meta_file, jsonencode(metadata));
+            fclose(meta_file);
+            
+
+            data = struct2table(struct( ...
+                "estimates", obj.estimates, ...
+                "wall_time", obj.wall_time, ...
+                "cpu_time", obj.cpu_time, ...
+                "gen_states", obj.gen_states ...
+            ));
+            writetable(data, "data.csv");
+
+            cd(old_dir);
+        end
     end
 
     methods (Static = true)
