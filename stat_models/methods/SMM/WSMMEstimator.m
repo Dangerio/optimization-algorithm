@@ -10,7 +10,7 @@ classdef WSMMEstimator < AbstactSMMEstimator
         sim_length_for_alpha_estimate = 2.5e6
         length_cycle_weight = 10
         smoothing_factor = 0.5
-        max_iter = 20
+        max_iter = 7
         tolerance = 2.5e-3
         verbose = false
     end
@@ -141,8 +141,9 @@ classdef WSMMEstimator < AbstactSMMEstimator
         function weight_matrix = compute_weight_matrix(obj, model, params, simulated_length)
             error_matrix = obj.compute_error_matrix(model, params, simulated_length);
             B_matrix = obj.compute_B_matrix(error_matrix);
-            weight_matrix = pinv(B_matrix);
+            weight_matrix = inv_chol(B_matrix);
             weight_matrix = (weight_matrix + weight_matrix.')/2;
+      
         end
     end
 end
