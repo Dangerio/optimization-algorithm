@@ -56,6 +56,8 @@ function Ahat = nearestSPD(A)
         % tweak by adding a tiny multiple of an identity matrix.
         mineig = min(eig(Ahat));
         Ahat = Ahat + (-mineig*k.^2 + eps(mineig))*eye(size(A));
+      else
+          return
       end
     end
 end
