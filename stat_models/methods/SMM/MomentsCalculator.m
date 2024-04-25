@@ -40,18 +40,19 @@ classdef MomentsCalculator
         end
         
         function moments = compute_moments(obj, time_series)
-            max_lag =  max(obj.lags_over_ts) + 1;
+            max_lag =  max(obj.lags_over_ts);
             length_timeseries = size(time_series, 2);
 
             time_series = abs(time_series);
-            time_series_lagged = lagmatrix(time_series, obj.lags_over_ts).';
+            time_series_lagged = lagmatrix(time_series, - obj.lags_over_ts).';
 
             time_series_power_lagged = bsxfun( @power, time_series_lagged, obj.first_power_vectors.');
             time_series_power_nolagged = time_series.^(obj.second_power_vectors.');
 
             moments = (time_series_power_lagged .* time_series_power_nolagged);
-            moments = moments(:, max_lag:length_timeseries);
+            moments = moments(:, 1: length_timeseries - max_lag);
             moments = moments.';
+
         end
 
         function mean_moments = compute_mean_moments(~, moments_vector)
