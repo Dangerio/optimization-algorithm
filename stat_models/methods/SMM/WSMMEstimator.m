@@ -10,7 +10,7 @@ classdef WSMMEstimator < AbstactSMMEstimator
         sim_length_for_alpha_estimate = 2.5e6
         length_cycle_weight = 10
         smoothing_factor = 0.5
-        max_iter = 100
+        max_iter = 20
         tolerance = 2.5e-3
         verbose = false
     end
@@ -62,6 +62,8 @@ classdef WSMMEstimator < AbstactSMMEstimator
                     disp('Params norm')
                     disp(norm(abs(params - old_params)))
                     disp("Algorithm terminated as tolerance exceeded")
+                    disp('Matrix norm')
+                    disp(norm(weight_matrix-old_weight_matrix))
                     break
                 end
                 if obj.verbose
@@ -78,6 +80,7 @@ classdef WSMMEstimator < AbstactSMMEstimator
                 else
                     weight_matrix = (1 - obj.smoothing_factor) * obj.compute_weight_matrix(model, params, obj.simulational_length_factor * data.get_length()) + obj.smoothing_factor * old_weight_matrix;
                 end
+
                 old_params = params;     
             end
 
@@ -120,9 +123,8 @@ classdef WSMMEstimator < AbstactSMMEstimator
             Q = zeros(size(error_matrix, 2));
             size_of_series = size(error_matrix, 1);
             for s = j+1:size_of_series
-                Q = Q + error_matrix(s,:).' * error_matrix(s - j,:);
+                Q = Q + (error_matrix(s,:).' * error_matrix(s - j,:))/(size_of_series);
             end
-            Q = Q./(size_of_series);
         end
 
         function B_matrix = compute_B_matrix(obj, error_matrix)
@@ -133,12 +135,14 @@ classdef WSMMEstimator < AbstactSMMEstimator
                 weight_inside = (obj.length_cycle_weight + 1 - k) / (obj.length_cycle_weight + 1);
                 B_matrix = B_matrix + weight_inside * (Q_j + Q_j.');
             end
+             B_matrix = nearestSPD(B_matrix);
         end
 
         function weight_matrix = compute_weight_matrix(obj, model, params, simulated_length)
             error_matrix = obj.compute_error_matrix(model, params, simulated_length);
             B_matrix = obj.compute_B_matrix(error_matrix);
-            weight_matrix = inv(B_matrix);
+            weight_matrix = pinv(B_matrix);
+            weight_matrix = (weight_matrix + weight_matrix.')/2;
         end
     end
 end
