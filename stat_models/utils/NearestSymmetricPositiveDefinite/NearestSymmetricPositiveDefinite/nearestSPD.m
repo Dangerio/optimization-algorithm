@@ -50,7 +50,7 @@ function Ahat = nearestSPD(A)
     while p ~= 0
       [R,p] = chol(Ahat);
       k = k + 1;
-      if p ~= 0 && k <=  200
+      if p ~= 0 && k <=  150
         % Ahat failed the chol test. It must have been just a hair off,
         % due to floating point trash, so it is simplest now just to
         % tweak by adding a tiny multiple of an identity matrix.
