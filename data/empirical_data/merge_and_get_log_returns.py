@@ -5,17 +5,6 @@ from tqdm import tqdm
 from pathlib import Path
 
 
-def str_to_num(num_str: float | int | str) -> float:
-    chunks = str(num_str).split(".")
-    result_str = [chunks[0]]
-    for chunk in chunks[1:]:
-        if len(chunk) == 3:
-            result_str += chunk
-        else:
-            result_str += "." + chunk
-    return float("".join(result_str))
-
-
 raw_data_dir = Path("raw_data")
 raw_data_files = sorted(os.listdir(raw_data_dir))
 grouped_data_files = list(zip(raw_data_files[::2], raw_data_files[1::2]))
@@ -50,8 +39,7 @@ for first_part, second_part in tqdm(grouped_data_files):
 
     merged_df["<CLOSE>"] = (
         np
-        .log(merged_df["<CLOSE>"]
-        .apply(str_to_num))
+        .log(merged_df["<CLOSE>"])
         .diff()
     )
     merged_df.rename(columns={
@@ -63,4 +51,4 @@ for first_part, second_part in tqdm(grouped_data_files):
     df_list.append(merged_df.drop(0))
 
 result_df = pd.concat(df_list)
-result_df.to_csv("clean_data.csv", sep=",", index=False)
+result_df.to_csv("merged_data.csv", sep=",", index=False)
