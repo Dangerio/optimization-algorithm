@@ -9,7 +9,7 @@ classdef MLEstimator < AbstractMethod
         end
     end
 
-    methods (Access = private)
+    methods (Access = protected)
         function log_likelihoods = compute_log_likelihood_vectorized(~, data, model, params_matrix)
             points_count = size(params_matrix, 1);
             log_likelihoods = zeros(points_count, 1);
