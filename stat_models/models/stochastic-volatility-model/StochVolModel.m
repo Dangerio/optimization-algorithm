@@ -16,6 +16,13 @@ classdef StochVolModel < LinearDynamicModel
             trajectory.endog = exp(hidden_ar_values / 2) .* noise * sigma;
         end
 
+        function volatiles = get_volatiles(obj, trajectory, params)
+            % get hiddens from Approx. Kalman Filtering
+            hiddens = obj.get_predictions(trajectory, params);
+            % calculate standard deviations
+            volatiles = exp(0.5 * (hiddens(:, 1) + params(1) / (1 - params(2)))); 
+        end
+
     end
 
     methods (Access = private)
