@@ -1,10 +1,12 @@
 classdef StochVolMMEstimator < AbstractMethod
     %STOCHVOLMMESTIMATOR Summary of this class goes here
     %   Detailed explanation goes here
-    
+    properties
+        use_baseline = false;
+    end
     
     methods
-        function [params] = compute_estimates(obj, data, ~, param_opt_set, ~)
+        function [params] = compute_estimates(obj, data, ~, param_opt_set, ~, ~)
             params = zeros(1, 3);
 
             log_sq_traj = log(data.endog.^2);
