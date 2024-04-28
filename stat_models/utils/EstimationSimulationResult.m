@@ -29,15 +29,16 @@ classdef EstimationSimulationResult < handle
             obj.model = model;
             obj.method = method;
             obj.solver = solver;
-            if nargin == 7
+            if nargin == 9
                 obj.simulation_name = simulation_name;
+            end
 
 
             obj.estimates = zeros(sim_count, size(true_params, 2));
             obj.wall_time = zeros(sim_count, 1);
             obj.cpu_time = zeros(sim_count, 1);
-            obj.gen_states = zeros(sim_count, size(RandStream(gen_type).state, 1));
-            end
+            obj.gen_states = zeros(sim_count, size(RandStream(gen_type).State, 1));
+            
         end
 
         function add_new_estimate(obj, estimate, gen_state, wall_time, cpu_time)
