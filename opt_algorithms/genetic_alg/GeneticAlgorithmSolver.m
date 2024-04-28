@@ -17,9 +17,15 @@ classdef GeneticAlgorithmSolver < Solver
             end
         end
         
-        function [y, x] = minimize(obj, func, opt_set)
+        function [y, x] = minimize(obj, func, opt_set, initial_point)
+            if nargin == 4
+                opt = optimoptions(obj.options, "InitialPopulationMatrix", [initial_point]);
+            else
+                opt = obj.options;
+            end
+            
             [x,y] = ga(func, size(opt_set, 1),[],[],[],[], ...
-                opt_set(:, 1),opt_set(:, 2),[], obj.options);
+                opt_set(:, 1),opt_set(:, 2),[], opt);
         end
     end
 end

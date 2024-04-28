@@ -16,7 +16,7 @@ classdef ParticleSwarmMatlabSolver < Solver
             end
         end
         
-        function [y, x] = minimize(obj, func, opt_set)
+        function [y, x] = minimize(obj, func, opt_set, ~)
             [x,y] = particleswarm(func, size(opt_set, 1), ...
                 opt_set(:, 1),opt_set(:, 2), obj.options);
         end
