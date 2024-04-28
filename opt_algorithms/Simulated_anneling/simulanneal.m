@@ -19,10 +19,15 @@ classdef simulanneal < Solver
             
         end
         
-        function [y, x] = minimize(obj, func, opt_set)
+        function [y, x] = minimize(obj, func, opt_set, initial_point)
+            if nargin == 4 && size(initial_point, 1) > 0
+                x0 = initial_point;
+            else
+                x0 = generate_population(1, opt_set);
+            end
             problem.options = obj.options;
             problem.solver = 'simulannealbnd';
-            problem.x0 = generate_population(1, opt_set);
+            problem.x0 = x0;
             problem.lb = opt_set(:, 1);
             problem.ub = opt_set(:, 2);
             problem.objective = func;
