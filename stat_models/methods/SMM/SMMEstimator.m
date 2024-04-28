@@ -9,6 +9,7 @@ classdef SMMEstimator < AbstactSMMEstimator
 
         simulational_length_factor = 10;
         verbose = false;
+        use_baseline = true
     end
     
     methods
@@ -26,9 +27,12 @@ classdef SMMEstimator < AbstactSMMEstimator
             
         end
         
-        function params = compute_estimates(obj, data, model, param_opt_set, solver)
+        function params = compute_estimates(obj, data, model, param_opt_set, solver, initial_param_guess)
+            if nargin < 6
+                initial_param_guess = [];
+            end
             weight_matrix = eye(obj.moments_calculator.get_moments_count());
-            params = obj.minimize_smm_objective_function(data, model, param_opt_set, weight_matrix, solver);
+            params = obj.minimize_smm_objective_function(data, model, param_opt_set, weight_matrix, solver, initial_param_guess);
             if obj.verbose
                 disp(params)
             end

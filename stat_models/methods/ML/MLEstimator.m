@@ -1,11 +1,17 @@
 classdef MLEstimator < AbstractMethod
     %MLESTIMATOR Maximum Likelihood Estimator
-    
+    properties
+        use_baseline = true
+    end
    
     methods
-        function [params] = compute_estimates(obj, data, model, param_opt_set, solver)
+        function [params] = compute_estimates(obj, data, model, param_opt_set, solver, initial_param_guess)
+            if nargin < 6
+                initial_param_guess = [];
+            end
+            
             likelihood_function = @(params_matrix) obj.compute_log_likelihood_vectorized(data, model, params_matrix);
-            [~, params] = solver.maximize(likelihood_function, param_opt_set);
+            [~, params] = solver.maximize(likelihood_function, param_opt_set, obj.get_initial_point(data, model, param_opt_set, solver, initial_param_guess));
         end
     end
 

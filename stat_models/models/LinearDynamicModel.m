@@ -1,7 +1,11 @@
 classdef (Abstract) LinearDynamicModel 
     %LINEARDYNAMICMODEL Summary of this class goes here
     %   Detailed explanation goes here
-       
+    
+    properties (Abstract)
+        baseline
+    end
+
     methods
         function obj = LinearDynamicModel()
         end

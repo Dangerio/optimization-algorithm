@@ -13,6 +13,7 @@ classdef WSMMEstimator < AbstactSMMEstimator
         max_iter = 7
         tolerance = 2.5e-3
         verbose = false
+        use_baseline = true
     end
     
     methods
@@ -51,12 +52,16 @@ classdef WSMMEstimator < AbstactSMMEstimator
 
         end
 
-        function params = compute_estimates(obj, data, model, param_opt_set, solver)
+        function params = compute_estimates(obj, data, model, param_opt_set, solver, initial_param_guess)
+            if nargin < 6
+                initial_param_guess = [];
+            end
+
             weight_matrix = eye(obj.moments_calculator.get_moments_count()); 
             old_weight_matrix = inf;
             old_params = Inf;
             for iter = 1:obj.max_iter
-                params = obj.minimize_smm_objective_function(data, model, param_opt_set, weight_matrix, solver);
+                params = obj.minimize_smm_objective_function(data, model, param_opt_set, weight_matrix, solver, initial_param_guess);
                 if norm(abs(params - old_params)) < obj.tolerance
                     disp(params)
                     disp('Params norm')

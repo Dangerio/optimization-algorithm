@@ -1,5 +1,8 @@
 classdef StochVolModel < LinearDynamicModel
-
+    
+    properties
+        baseline = StochVolMMEstimator;
+    end
 
     properties (Constant = true)
         exp_log_sq_stdnorm = -double((eulergamma + log(2)));
