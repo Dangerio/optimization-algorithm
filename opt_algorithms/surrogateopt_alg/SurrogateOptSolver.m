@@ -20,7 +20,7 @@ classdef SurrogateOptSolver < Solver
         end
         
         function [y, x] = minimize(obj, func, opt_set, initial_point)
-            if nargin == 4
+            if nargin == 4 && size(initial_point, 1) > 0
                 opt = optimoptions(obj.options, "InitialPoints", [initial_point]);
             else
                 opt = obj.options;

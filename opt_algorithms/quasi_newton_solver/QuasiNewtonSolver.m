@@ -21,7 +21,7 @@ classdef QuasiNewtonSolver < Solver
         function [y, x] = minimize(obj, func, opt_set, initial_point)
             problem.options = obj.options;
             problem.solver = 'fmincon';
-            if nargin == 4
+            if nargin == 4 && size(initial_point, 1) > 0
                 problem.x0 = initial_point;
             else
                 problem.x0 = generate_population(1, opt_set);
