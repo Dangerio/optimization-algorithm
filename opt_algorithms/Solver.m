@@ -3,13 +3,13 @@ classdef (Abstract) Solver
     %   Detailed explanation goes here
         
     methods (Abstract)   
-        minimize(obj, func, opt_set);
+        minimize(obj, func, opt_set, initial_point);
     end
 
     methods
-        function [y, x] = maximize(obj, func, opt_set)
+        function [y, x] = maximize(obj, func, opt_set, initial_point)
             minus_func = @(X) -func(X);
-            [y, x] = obj.minimize(minus_func, opt_set);
+            [y, x] = obj.minimize(minus_func, opt_set, initial_point);
             y = -y;
         end
     end

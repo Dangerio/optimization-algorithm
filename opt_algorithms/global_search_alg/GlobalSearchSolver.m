@@ -16,10 +16,16 @@ classdef GlobalSearchSolver < Solver
             end
         end
         
-        function [y, x] = minimize(obj, func, opt_set)
+        function [y, x] = minimize(obj, func, opt_set, initial_point)
+            
+            if nargin == 4 && size(initial_point, 1) > 0
+                x0 = initial_point;
+            else
+                x0 = generate_population(1, opt_set);
+            end
             problem = createOptimProblem( ...
                 'fmincon', 'objective', func, ...
-                'x0', generate_population(1, opt_set), ...
+                'x0', x0, ...
                 'lb', opt_set(:, 1), 'ub', opt_set(:, 2) ...
             );
             [x, y] = run(obj.gs_solver, problem);

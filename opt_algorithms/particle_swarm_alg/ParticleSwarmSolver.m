@@ -26,7 +26,7 @@ classdef ParticleSwarmSolver < Solver
         end
      
         
-        function [value_global, argmin_global] = minimize(obj, func, opt_set)
+        function [value_global, argmin_global] = minimize(obj, func, opt_set, ~)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
             dim = size(opt_set, 1);

@@ -29,7 +29,7 @@ classdef ShvedovSolver < Solver
             end
         end
 
-        function [final_value, best_argument] = minimize(obj, func, opt_set)
+        function [final_value, best_argument] = minimize(obj, func, opt_set, ~)
             dim = size(opt_set, 1);
             pop_size = 3 + dim*2;
             drop_size = floor(pop_size / 2);

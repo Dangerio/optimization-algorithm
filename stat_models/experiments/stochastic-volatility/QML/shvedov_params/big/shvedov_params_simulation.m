@@ -4,9 +4,9 @@ qml_method = MLEstimator();
 
 
 true_params = [-0.7, 0.9, 0.4];
-params_opt_set = [-1, 0; -1 + 1e-6, 1 - 1e-6; 1e-6, 1];
+params_opt_set = [-1.3, 0; -1 + 1e-6, 1 - 1e-6; 1e-6, 1];
 
-solver = GlobalSearchSolver();
+solver = QuasiNewtonSolver();
 num_handles = 10;
 trajectory_length = 4000;
 

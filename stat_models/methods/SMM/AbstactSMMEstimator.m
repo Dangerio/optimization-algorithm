@@ -28,9 +28,9 @@ classdef (Abstract) AbstactSMMEstimator < AbstractMethod
 
     
     methods (Access = protected)
-        function params = minimize_smm_objective_function(obj, data, model, param_opt_set, weight_matrix, solver)
+        function params = minimize_smm_objective_function(obj, data, model, param_opt_set, weight_matrix, solver, initial_param_guess)
             moments_mse = @(params_matrix) obj.estimate_moments_and_compute_mse(data, model, params_matrix, weight_matrix);
-            [~, params] = solver.minimize(moments_mse, param_opt_set);
+            [~, params] = solver.minimize(moments_mse, param_opt_set, obj.get_initial_point(data, model, param_opt_set, solver, initial_param_guess));
         end
         
         function mse_vector = estimate_moments_and_compute_mse(obj, data, model, params_matrix, weight_matrix)
