@@ -1,7 +1,7 @@
 classdef StochVolModel < LinearDynamicModel
     
     properties
-        baseline = StochVolMMEstimator;
+        baseline = ConstantEstMethod([-0.9, 0.9, 0.3]);
     end
 
     properties (Constant = true)
@@ -24,6 +24,10 @@ classdef StochVolModel < LinearDynamicModel
             hiddens = obj.get_predictions(trajectory, params);
             % calculate standard deviations
             volatiles = exp(0.5 * (hiddens(:, 1) + params(1) / (1 - params(2)))); 
+        end
+
+        function obj = set_apriori_params(obj, params)
+            obj.baseline = ConstantEstMethod(params);
         end
 
     end

@@ -9,7 +9,7 @@ classdef SMMEstimator < AbstactSMMEstimator
 
         simulational_length_factor = 10;
         verbose = false;
-        use_baseline = false
+        use_baseline = true
     end
     
     methods
