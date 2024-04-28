@@ -3,29 +3,20 @@ classdef MomentsCalculator
     
     properties
         %shvedov
-        first_power_vectors = [0 0 0 0 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2];
-        second_power_vectors = [1 2 3 4 1 1 1 1 1 2 2 2 2 2 1 1 1 1 1];
-        lags_over_ts = [0 0 0 0 3 6 9 12 15 2 5 8 11 14 1 4 7 10 13];
+        % first_power_vectors = [0 0 0 0 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2];
+        % second_power_vectors = [1 2 3 4 1 1 1 1 1 2 2 2 2 2 1 1 1 1 1];
+        % lags_over_ts = [0 0 0 0 3 6 9 12 15 2 5 8 11 14 1 4 7 10 13];
 
         % Kevin Sheppard
         % first_power_vectors = [0 0 0 0 1 1 2 2];
         % second_power_vectors = [1 2 3 4 1 1 2 2];
         % lags_over_ts = [0 0 0 0 1 3 2 4];
 
-        %1
-        % first_power_vectors = [0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2];
-        % second_power_vectors = [1 2 3 4 0.25 0.5 0.75 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1];
-        % lags_over_ts = [0 0 0 0 0 0 0 0 3 6 9 12 15 18 21 24 2 5 8 11 14 17 20 23 1 4 7 10 13 16 19 22];
-
-        %2
-        % first_power_vectors = [0 0 0 0 1 1 1 1 1 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5];
-        % second_power_vectors = [1 0.25 0.5 0.75 1 1 1 1 1 0.5 0.5 0.5 0.5 0.5 1 1 1 1 1];
-        % lags_over_ts = [0 0 0 0 3 6 9 12 15 2 5 8 11 14 1 4 7 10 13];
-        %3
-        % first_power_vectors =  [0 0 0 0 1 1 1 1 1 2 2 2 2 2];
-        % second_power_vectors = [1 2 3 4 1 1 1 1 1 2 2 2 2 2];
-        % lags_over_ts =         [0 0 0 0 2 4 6 8 10 1 3 5 7 9];
-        % 
+        %3 Andersen Sorsen 14 baseline
+        first_power_vectors =  [0 0 0 0 1 1 1 1 1 2 2 2 2 2];
+        second_power_vectors = [1 2 3 4 1 1 1 1 1 2 2 2 2 2];
+        lags_over_ts =         [0 0 0 0 2 4 6 8 10 1 3 5 7 9];
+         
 
 
     end 
