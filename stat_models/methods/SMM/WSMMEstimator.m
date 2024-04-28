@@ -13,7 +13,7 @@ classdef WSMMEstimator < AbstactSMMEstimator
         max_iter = 7
         tolerance = 2.5e-3
         verbose = false
-        use_baseline = true
+        use_baseline = false
     end
     
     methods
