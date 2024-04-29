@@ -31,7 +31,7 @@ classdef SMMEstimator < AbstactSMMEstimator
             if nargin < 6
                 initial_param_guess = [];
             end
-            weight_matrix = eye(obj.moments_calculator.get_moments_count());
+            weight_matrix = inv(diag(std(obj.moments_calculator.compute_moments(data.endog.'),1)));
             params = obj.minimize_smm_objective_function(data, model, param_opt_set, weight_matrix, solver, initial_param_guess);
             if obj.verbose
                 disp(params)
