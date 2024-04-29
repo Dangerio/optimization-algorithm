@@ -1,6 +1,7 @@
 simulation_count = 500;
 sv_model = StochVolModel;
 qml_method = MLEstimator();
+qml_method.use_baseline = false;
 
 
 true_params = [-0.7, 0.9, 0.4];
