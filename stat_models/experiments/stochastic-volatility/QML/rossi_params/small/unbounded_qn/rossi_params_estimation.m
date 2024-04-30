@@ -1,11 +1,4 @@
 sv_model = StochVolModel;
-% initial_params = [-0.9, 0.9, 0.3];
-% initial_params = [-0.5, 0.9, 0.25];
-% initial_params = [-0.5, 0.9, 0.2];
-% initial_params = [-0.25, 0.9, 0.2];
-% initial_params = [-0.5, 0.9, 0.3];
-% initial_params = [-0.9, 0.9, 0.3];
-% initial_params = [-0.15, 0.98, 0.15];
 initial_params = [-0.9, 0.9, 0.3];
 sv_model = sv_model.set_apriori_params(initial_params);
 
