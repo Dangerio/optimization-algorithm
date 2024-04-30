@@ -51,7 +51,8 @@ toc
 
 summary_table_one_worker = EstimationSimulationResult.aggregate_results([one_worker_sim]);
 save("summary_2", "summary_table_one_worker");
-
+clc
+clear
 
 %%%%%%%%%%%
 
@@ -80,7 +81,8 @@ toc
 
 summary_table_one_worker = EstimationSimulationResult.aggregate_results([one_worker_sim]);
 save("summary_3", "summary_table_one_worker");
-
+clc
+clear
 %%%%%%%%%%%
 
 simulation_count = 1000;
