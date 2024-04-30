@@ -3,7 +3,7 @@ classdef QuasiNewtonSolver < Solver
     %   Detailed explanation goes here
     
     properties
-        options = optimoptions('fmincon', 'Algorithm','sqp');
+        options = optimoptions('fmincon');
     end
     
     methods
