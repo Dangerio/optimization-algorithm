@@ -3,7 +3,7 @@ classdef QuasiNewtonSolver < Solver
     %   Detailed explanation goes here
     
     properties
-        options = optimoptions('fmincon');
+        options = optimoptions('fmincon', 'Algorithm','sqp');
     end
     
     methods
@@ -12,7 +12,7 @@ classdef QuasiNewtonSolver < Solver
                 verbose = false;
             end
             if verbose
-                obj.options = optimoptions(obj.options, 'Display','iter','Algorithm','sqp');
+                obj.options = optimoptions(obj.options, 'Display','iter');
             else
                 obj.options = optimoptions(obj.options, 'Display', 'off');
             end
