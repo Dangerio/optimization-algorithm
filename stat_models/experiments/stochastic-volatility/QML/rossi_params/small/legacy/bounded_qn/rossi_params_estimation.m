@@ -1,12 +1,9 @@
 sv_model = StochVolModel;
-initial_params = [-0.9, 0.9, 0.3];
-sv_model = sv_model.set_apriori_params(initial_params);
 
 qml_method = MLEstimator();
+qml_method.use_baseline = false;
 
-solver = GlobalSearchSolver(false);
-solver.gs_solver.NumTrialPoints = 50;
-solver.gs_solver.NumStageOnePoints = 25;
+solver = QuasiNewtonSolver(false);
 
 true_params = [
     -0.821, 0.9, 0.675;
@@ -20,11 +17,11 @@ true_params = [
     -0.141, 0.98, 0.0614;
 ];
 simulation_count = 500;
-params_opt_set = [-Inf, Inf; -0.995, 0.995; 1e-3, Inf];
+params_opt_set = [-3, 0; 0.75, 0.995; 1e-3, 1.3];
 trajectory_length = 500;
 
 num_handles = 1;
-num_workers = 5;
+num_workers = 1;
 
 
 

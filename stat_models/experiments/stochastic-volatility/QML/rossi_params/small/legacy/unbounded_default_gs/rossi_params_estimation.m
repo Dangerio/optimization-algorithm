@@ -3,10 +3,7 @@ initial_params = [-0.9, 0.9, 0.3];
 sv_model = sv_model.set_apriori_params(initial_params);
 
 qml_method = MLEstimator();
-
 solver = GlobalSearchSolver(false);
-solver.gs_solver.NumTrialPoints = 50;
-solver.gs_solver.NumStageOnePoints = 25;
 
 true_params = [
     -0.821, 0.9, 0.675;

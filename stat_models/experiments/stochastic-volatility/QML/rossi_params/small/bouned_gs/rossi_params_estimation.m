@@ -3,7 +3,9 @@ sv_model = StochVolModel;
 qml_method = MLEstimator();
 qml_method.use_baseline = false;
 
-solver = QuasiNewtonSolver(false);
+solver = GlobalSearchSolver(false);
+solver.gs_solver.NumTrialPoints = 50;
+solver.gs_solver.NumStageOnePoints = 25;
 
 true_params = [
     -0.821, 0.9, 0.675;
@@ -23,15 +25,15 @@ trajectory_length = 500;
 num_handles = 1;
 num_workers = 5;
 
-
-
-simulations = [];
-for idx = 1:size(true_params, 1)
-    params = true_params(idx, :);
-    simulation_result = run_simulation_in_parallel("rossi_params" + idx, num_workers, simulation_count, sv_model, params, params_opt_set, ...
-           trajectory_length, qml_method, solver, num_handles);
-    simulations = [simulations, simulation_result];
-end
+tic
+    simulations = [];
+    for idx = 1:size(true_params, 1)
+        params = true_params(idx, :);
+        simulation_result = run_simulation_in_parallel("rossi_params" + idx, num_workers, simulation_count, sv_model, params, params_opt_set, ...
+               trajectory_length, qml_method, solver, num_handles);
+        simulations = [simulations, simulation_result];
+    end
+toc
 
 
 summary_table = EstimationSimulationResult.aggregate_results(simulations);
