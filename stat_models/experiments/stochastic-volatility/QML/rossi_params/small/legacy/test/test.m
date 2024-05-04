@@ -3,7 +3,7 @@ sv_model = StochVolModel;
 qml_method = MLEstimator();
 qml_method.use_baseline = false;
 
-solver = GlobalSearchSolver(false);
+solver = GlobalSearchSolver(true);
 solver.gs_solver.NumTrialPoints = 50;
 solver.gs_solver.NumStageOnePoints = 25;
 
@@ -18,12 +18,12 @@ true_params = [
     % -0.353, 0.95, 0.0964;
     % -0.1412, 0.98, 0.0614;
 ];
-simulation_count = 500;
+simulation_count = 50;
 params_opt_set = [-3, 0; 0.75, 0.995; 1e-3, 2];
 trajectory_length = 500;
 
 num_handles = 1;
-num_workers = 5;
+num_workers = 1;
 
 tic
     simulations = [];
