@@ -19,7 +19,7 @@ classdef StochVolModel < LinearDynamicModel
             sigma = exp(params(1) / (2 * (1 - params(2))));
             noise = randn(stream, length, 1);
             if ~ obj.is_gaussian  
-                noise = noise./sqrt(randn(stream, length, 1));
+                noise = noise./abs(randn(stream, length, 1));
             end
             trajectory.endog = exp(hidden_ar_values / 2) .* noise * sigma;
         end
