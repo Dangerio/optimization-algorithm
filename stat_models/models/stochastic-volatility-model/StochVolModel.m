@@ -6,7 +6,7 @@ classdef StochVolModel < LinearDynamicModel
 
     properties (Constant = true)
         exp_log_sq_stdnorm = -double((eulergamma + log(2)));
-        var_log_sq_stdnorm = double(eulergamma^2 + eulergamma * log(4)) + log(2)^2 + pi^2 / 2 - double((eulergamma + log(2))^2);
+        var_log_sq_stdnorm = pi^2/2
     end
 
     methods
