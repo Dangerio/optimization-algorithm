@@ -1,34 +1,37 @@
-simulation_count = 10;
 sv_model = StochVolModel;
-qml_method = MLEstimator();
+sv_model.is_gaussian = false;
+
+qml_method = SMMEstimator3;
+% qml_method = MLEstimator();
+qml_method.use_baseline = false;
+
+solver = GlobalSearchSolver(true);
+solver.gs_solver.NumTrialPoints = 50;
+solver.gs_solver.NumStageOnePoints = 25;
+solver.gs_solver.FunctionTolerance = eps(0);
 
 
-true_params = [-0.7, 0.9, 0.4];
-params_opt_set = [-1.5, 0; 1e-8, 1; 1e-8, 1.2];
-
-solver = SurrogateOptSolver();
-num_handles = 10;
+true_params = [
+    -0.821, 0.9, 0.675;
+    -0.1412, 0.98, 0.0614;
+];
+simulation_count = 10;
+params_opt_set = [-3, 0; 0.75, 0.995; 1e-3, 2];
 trajectory_length = 4000;
 
+num_handles = 1;
 num_workers = 1;
+
 tic
-    one_worker_sim = run_simulation_in_parallel("one_worker_new", num_workers, simulation_count, sv_model, true_params, params_opt_set, ...
-           trajectory_length, qml_method, solver, num_handles);
+    simulations = [];
+    for idx = 1:size(true_params, 1)
+        params = true_params(idx, :);
+        simulation_result = run_simulation_in_parallel("rossi_params" + idx, num_workers, simulation_count, sv_model, params, params_opt_set, ...
+               trajectory_length, qml_method, solver, num_handles);
+        simulations = [simulations, simulation_result];
+    end
 toc
 
-summary_table_one_worker = EstimationSimulationResult.aggregate_results([one_worker_sim]);
-save("summary_one_worker_new", "summary_table_one_worker");
-% assert(all(one_worker_sim.compute_estimates_rmse() < 0.15))
 
-
-num_workers = 5;
-tic
-    several_workers_sim = run_simulation_in_parallel("multiple_workers_new", num_workers, simulation_count, sv_model, true_params, params_opt_set, ...
-           trajectory_length, qml_method, solver, num_handles);
-toc
-
-summary_table_several_workers = EstimationSimulationResult.aggregate_results([several_workers_sim]);
-save("summary_several_workers_new", "summary_table_several_workers");
-% assert(all(several_workers_sim.compute_estimates_rmse() < 0.15))
- 
-% assert(all(test_sim.compute_estimates_rmse() < 0.15))
+summary_table = EstimationSimulationResult.aggregate_results(simulations);
+save("summary_table", "summary_table");
