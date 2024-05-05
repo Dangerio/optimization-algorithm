@@ -9,7 +9,8 @@ classdef EstimationSimulationResult < handle
         gen_type
         current_simulation = 1
         simulation_name = "Simulation"
-        model
+        dgp_model
+        assumed_model
         method
         solver
         
@@ -21,15 +22,16 @@ classdef EstimationSimulationResult < handle
     end
     
     methods
-        function obj = EstimationSimulationResult(sim_count, length, gen_type, true_params, param_opt_set, model, method, solver, simulation_name)
+        function obj = EstimationSimulationResult(sim_count, length, gen_type, true_params, param_opt_set, dgp_model, assumed_model, method, solver, simulation_name)
             obj.true_params = true_params;
             obj.param_opt_set = param_opt_set;
             obj.length = length;
             obj.gen_type = gen_type;
-            obj.model = model;
+            obj.dgp_model = dgp_model;
+            obj.assumed_model = assumed_model;
             obj.method = method;
             obj.solver = solver;
-            if nargin == 9
+            if nargin == 10
                 obj.simulation_name = simulation_name;
             end
 
@@ -61,7 +63,7 @@ classdef EstimationSimulationResult < handle
         function trajectory = get_trajectory(obj, index)
             stream = RandStream(obj.gen_type);
             stream.State = uint32(obj.gen_states(index, :)');
-            trajectory = obj.model.generate_trajectory(obj.true_params, obj.length, true, stream);
+            trajectory = obj.dgp_model.generate_trajectory(obj.true_params, obj.length, true, stream);
         end
 
         function obj = join(obj, other)
@@ -95,7 +97,8 @@ classdef EstimationSimulationResult < handle
             
             metadata = struct(...
                 "simulation_name", obj.simulation_name, ...
-                "model", class(obj.model), ...
+                "dgp_model", class(obj.dgp_model), ...
+                "assumed_model", class(obj.assumed_model), ...
                 "true_params", obj.true_params, ...
                 "param_opt_set", obj.param_opt_set, ...
                 "length", obj.length, ...
