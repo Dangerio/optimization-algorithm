@@ -2,6 +2,7 @@ classdef StochVolModel < LinearDynamicModel
     
     properties
         baseline = ConstantEstMethod([-0.9, 0.9, 0.3]);
+        fix_inlier_problem = false;
         is_gaussian = true;
         t_freedom = 10;
 
@@ -63,22 +64,12 @@ classdef StochVolModel < LinearDynamicModel
     methods (Access = protected)
         % params = [theta_1, theta_2, theta_3]
 
-        function [transformed_trajectory] = transform_data_to_ldm(~, trajectory)
+        function [transformed_trajectory] = transform_data_to_ldm(obj, trajectory)
             log_returns = trajectory.endog;
-
-            log_returns_var = var(log_returns);
-            lambda = 0.02;
-
-            numerator = log_returns.^2 + lambda * log_returns_var;
-            denominator = lambda * log_returns_var;
-            
-            transformed_trajectory = Trajectory( ...
-                log(numerator) - numerator / denominator ...
-            );
-            % new_values = trajectory.endog;
-            % clip_coef = 3e-7;
-            % new_values(abs(new_values) < clip_coef) = clip_coef;
-            % transformed_trajectory = Trajectory(log(new_values.^2));
+            if obj.fix_inlier_problem
+                log_returns = log_returns - mean(log_returns, "all");
+            end
+            transformed_trajectory = Trajectory(log(log_returns.^2));
         end
 
 
