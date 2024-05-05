@@ -3,6 +3,7 @@ classdef StochVolModel < LinearDynamicModel
     properties
         baseline = ConstantEstMethod([-0.9, 0.9, 0.3]);
         is_gaussian = true;
+        t_freedom = 10;
 
     end
 
@@ -18,8 +19,12 @@ classdef StochVolModel < LinearDynamicModel
             hidden_ar_values = obj.generate_hidden_ar_one_process(params, length, is_initial_value_random, stream);
             sigma = exp(params(1) / (2 * (1 - params(2))));
             noise = randn(stream, length, 1);
-            if ~ obj.is_gaussian  
-                noise = noise./abs(randn(stream, length, 1));
+            if ~ obj.is_gaussian 
+                noise_sq_sum = 0;
+                for i=1:obj.t_freedom
+                    noise_sq_sum = noise_sq_sum + randn(stream, length, 1).^2;
+                end
+                noise = noise./sqrt(noise_sq_sum/obj.t_freedom);
             end
             trajectory.endog = exp(hidden_ar_values / 2) .* noise * sigma;
         end
