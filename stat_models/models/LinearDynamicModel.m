@@ -30,7 +30,11 @@ classdef (Abstract) LinearDynamicModel
                 endog_shift = obj.compute_endog_shift(exog_observation, params);
                 endog_variance = endog_transformation * state_variance ...
                     * endog_transformation';
-                endog_variance = nearestSPD(endog_variance);
+                
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                % endog_variance = nearestSPD(endog_variance);
+                % if endog_variance < 1e7
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
              
                 residuals_variance = obj.compute_residuals_variance(...
