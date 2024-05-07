@@ -1,12 +1,13 @@
+dgp_model = StochVolModel;
+dgp_model.is_gaussian = false;
+dgp_model.t_freedom = 10;
 
-%%%%%%%%%%%%%
-clc
-clear
+assumed_model = StochVolModel;
+assumed_model.is_gaussian = true;
+assumed_model.fix_inlier_problem = false;
 
-sv_model = StochVolModel;
-
-qml_method = SMMEstimator2;
-qml_method.use_baseline = false;
+qml_method = SMMEstimator5();
+% qml_method.use_baseline = true; % change it back
 
 solver = GlobalSearchSolver(false);
 solver.gs_solver.NumTrialPoints = 50;
@@ -21,7 +22,9 @@ true_params = [
 ];
 simulation_count = 500;
 params_opt_set = [-3, 0; 0.75, 0.995; 1e-3, 2];
-trajectory_lengths = [4000];
+% params_opt_set = [-Inf, Inf; -0.995, 0.995; 1e-3, Inf]; % change it back
+
+trajectory_lengths = [2000];
 
 num_handles = 1;
 num_workers = 6;
@@ -32,12 +35,12 @@ tic
         trajectory_length = trajectory_lengths(length_idx);
         for idx = 1:size(true_params, 1)
             params = true_params(idx, :);   
-            sim_name = "rossi_params_19m" + "_" + idx + "_T=" + trajectory_length;
+            sim_name = "rossi_params" + "_" + idx + "_T=" + trajectory_length;
             tic
                 disp("start " + sim_name)
                 
                 simulation_result = run_simulation_in_parallel( ...
-                   sim_name, num_workers, simulation_count, sv_model, params, ...
+                   sim_name, num_workers, simulation_count, dgp_model, assumed_model, params, ...
                    params_opt_set, trajectory_length, qml_method, solver, num_handles ...
                );
                 simulations = [simulations, simulation_result];
@@ -50,4 +53,4 @@ toc
 
 
 summary_table = EstimationSimulationResult.aggregate_results(simulations);
-save("summary_table_19m", "summary_table");
+save("summary_table", "summary_table");

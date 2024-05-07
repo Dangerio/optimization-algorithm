@@ -1,11 +1,6 @@
-
-%%%%%%%%%%%%%
-clc
-clear
-
 sv_model = StochVolModel;
 
-qml_method = SMMEstimator2;
+qml_method = SMMEstimator;
 qml_method.use_baseline = false;
 
 solver = GlobalSearchSolver(false);
@@ -21,10 +16,10 @@ true_params = [
 ];
 simulation_count = 500;
 params_opt_set = [-3, 0; 0.75, 0.995; 1e-3, 2];
-trajectory_lengths = [4000];
+trajectory_lengths = [250, 500, 1000, 2000, 4000];
 
 num_handles = 1;
-num_workers = 6;
+num_workers = 5;
 
 tic
     simulations = [];
@@ -32,7 +27,7 @@ tic
         trajectory_length = trajectory_lengths(length_idx);
         for idx = 1:size(true_params, 1)
             params = true_params(idx, :);   
-            sim_name = "rossi_params_19m" + "_" + idx + "_T=" + trajectory_length;
+            sim_name = "rossi_params" + "_" + idx + "_T=" + trajectory_length;
             tic
                 disp("start " + sim_name)
                 
@@ -50,4 +45,4 @@ toc
 
 
 summary_table = EstimationSimulationResult.aggregate_results(simulations);
-save("summary_table_19m", "summary_table");
+save("summary_table", "summary_table");
