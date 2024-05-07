@@ -1,0 +1,1 @@
+{"simulation_name":"rossi_params_46m_2_T=4000","model":"StochVolModel","true_params":[-0.368,0.95,0.26],"param_opt_set":[[-3,0],[0.75,0.995],[0.001,2]],"length":4000,"method":"SMMEstimator5","solver":"GlobalSearchSolver","simulation_count":504,"generator_type":"threefry4x64_20"}
