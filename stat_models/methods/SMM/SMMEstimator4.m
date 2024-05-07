@@ -1,11 +1,11 @@
-classdef SMMEstimator < AbstactSMMEstimator
+classdef SMMEstimator4 < AbstactSMMEstimator
     %SMMESTIMATOR Implementation of vanilla SMM (with Identity weight matrix)
     
     properties
         stream_batch_size = 1;
         stream_batch_loader
 
-        moments_calculator = MomentsCalculator;
+        moments_calculator = MomentsCalculator4;
 
         simulational_length_factor = 10;
         verbose = false;

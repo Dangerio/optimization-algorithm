@@ -2,10 +2,10 @@ classdef WSMMEstimator < AbstactSMMEstimator
     %WSMMESTIMATOR Implementation of SMM with weight matrix (WSMM)
     
     properties
-        stream_batch_size = 4;
+        stream_batch_size = 2;
         stream_batch_loader
 
-        moments_calculator = MomentsCalculator;
+        moments_calculator = MomentsCalculator3;
         simulational_length_factor = 10
         sim_length_for_alpha_estimate = 2.5e6
         length_cycle_weight = 10
@@ -15,7 +15,7 @@ classdef WSMMEstimator < AbstactSMMEstimator
         verbose = false
         use_baseline = true
         initial_idenity = true
-        matrix_type = 1 %1 is NW or 2 is IVC
+        matrix_type = 2 %1 is NW or 2 is IVC
     end
     
     methods
@@ -66,11 +66,11 @@ classdef WSMMEstimator < AbstactSMMEstimator
         function params = compute_estimates(obj, data, model, param_opt_set, solver)
             initial_param_guess = [];
             
-
             if obj.initial_idenity
                 weight_matrix = inv(diag(std(obj.moments_calculator.compute_moments(data.endog.'),1)));
             else
-                weight_matrix = obj.compute_weight_matrix(model, data);
+                % weight_matrix = eye(obj.moments_calculator.get_moments_count());
+                 weight_matrix = compute_weight_matrix(obj, model, data);
             end
 
                 
@@ -95,7 +95,7 @@ classdef WSMMEstimator < AbstactSMMEstimator
                     disp(norm(weight_matrix-old_weight_matrix))
                 end
                 old_weight_matrix = weight_matrix;     
-                %weight_matrix = obj.compute_weight_matrix(model, data, params, obj.simulational_length_factor * data.get_length());
+                % weight_matrix = obj.compute_weight_matrix(model, data, params, obj.simulational_length_factor * data.get_length());
                 if iter == 1
                     weight_matrix = obj.compute_weight_matrix(model, data, params, obj.simulational_length_factor * data.get_length());
                 else
@@ -142,11 +142,12 @@ classdef WSMMEstimator < AbstactSMMEstimator
             if nargin == 3
                 alpha_estimate = obj.compute_alpha_estimate(data);
                 moments_matrix = obj.moments_calculator.compute_moments(data.endog.');
-                error_matrix = (moments_matrix - alpha_estimate)/alpha_estimate;
+                error_matrix = (moments_matrix - alpha_estimate)./alpha_estimate;
+
             else
-                alpha_estimate = obj.compute_alpha_estimate(data, model, params);
+                alpha_estimate = obj.compute_alpha_estimate(data);
                 moments_matrix = obj.compute_moments_matrix(model, params, simulated_length);
-                error_matrix = (moments_matrix - alpha_estimate)/alpha_estimate;
+                error_matrix = (moments_matrix - alpha_estimate)./alpha_estimate;
             end
         end
 
@@ -160,42 +161,22 @@ classdef WSMMEstimator < AbstactSMMEstimator
 
         function B_matrix = compute_B_matrix(obj, error_matrix)
             B_matrix = obj.compute_Q_matrix(error_matrix, 0);
-            B_matrix = (B_matrix + B_matrix.')/2;
             
             for k = 1:obj.length_cycle_weight
                 Q_j = obj.compute_Q_matrix(error_matrix, k);
                 weight_inside = (obj.length_cycle_weight + 1 - k) / (obj.length_cycle_weight + 1);
                 B_matrix = B_matrix + weight_inside * (Q_j + Q_j.');
             end
-             % B_matrix = nearestSPD(B_matrix);
-             B_matrix = (B_matrix + B_matrix.')/2;
+            B_matrix = nearestSPD(B_matrix);
 
         end
-
-        function weight_matrix_std = compute_weight_std(obj, data, model, params, simulated_length)
-            if nargin == 2
-                weight_matrix_std = diag(std(obj.moments_calculator.compute_moments(data.endog.'),1));
-            else
-                obj.stream_batch_loader.pool.reset();
-                is_initial_value_random = true;
-                trajectory = model.generate_trajectory( ...
-                params, simulated_length, ...
-                is_initial_value_random, obj.stream_batch_loader.get_random_stream(4));
-                weight_matrix_std = diag(std(obj.moments_calculator.compute_moments(trajectory.endog.'),1));
-            end
-        end
-
 
         function weight_matrix = compute_weight_matrix(obj, model, data, params, simulated_length)
             if nargin == 3
                 error_matrix = obj.compute_error_matrix(model, data);
                 simulated_length = data.get_length;
-                weight_matrix_std = obj.compute_weight_std(data);
             else
                 error_matrix = obj.compute_error_matrix(model, data, params, simulated_length);
-                % weight_matrix_std = compute_weight_std(obj, data, model, params, simulated_length);
-                weight_matrix_std = compute_weight_std(obj, data);
-
             end
 
             if obj.matrix_type == 1
@@ -207,11 +188,10 @@ classdef WSMMEstimator < AbstactSMMEstimator
                 disp('No such matrix found')
                 return
             end
+                        weight_matrix = inv(weight_matrix);
 
-            % weight_matrix = inv_chol(B_matrix);
-            weight_matrix = pinv(weight_matrix_std * weight_matrix);
             weight_matrix = (weight_matrix + weight_matrix.')/2;
-      
+            weight_matrix = diag(diag(weight_matrix));
         end
     end
         

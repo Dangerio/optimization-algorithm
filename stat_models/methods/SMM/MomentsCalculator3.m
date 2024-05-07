@@ -1,21 +1,23 @@
-classdef MomentsCalculator
+classdef MomentsCalculator3
     %MOMENTSCALCULATOR Class calculating moments of a time series
     
     properties
         %shvedov
         %first_power_vectors = [0 0 0 0 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2];
         %second_power_vectors = [1 2 3 4 1 1 1 1 1 2 2 2 2 2 1 1 1 1 1];
-        %ags_over_ts = [0 0 0 0 3 6 9 12 15 2 5 8 11 14 1 4 7 10 13];
-
-        % Andersen Sorsen 24 moments
-        %first_power_vectors = [0 0 0 0 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2];
-        %second_power_vectors = [1 2 3 4 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2];
-        %lags_over_ts = [0 0 0 0 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10];
+        %lags_over_ts = [0 0 0 0 3 6 9 12 15 2 5 8 11 14 1 4 7 10 13];
 
         %3 Andersen Sorsen 14 baseline
-        first_power_vectors =  [0 0 0 0 1 1 1 1 1 2 2 2 2 2];
-        second_power_vectors = [1 2 3 4 1 1 1 1 1 2 2 2 2 2];
-        lags_over_ts =         [0 0 0 0 2 4 6 8 10 1 3 5 7 9];
+        %first_power_vectors =  [0 0 0 0 1 1 1 1 1 2 2 2 2 2];
+        %second_power_vectors = [1 2 3 4 1 1 1 1 1 2 2 2 2 2];
+        %lags_over_ts =         [0 0 0 0 2 4 6 8 10 1 3 5 7 9];
+
+
+        % Andersen Sorsen 24 moments
+        first_power_vectors = [0 0 0 0 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2];
+        second_power_vectors = [1 2 3 4 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2];
+        lags_over_ts = [0 0 0 0 1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10];
+
 
 
 
